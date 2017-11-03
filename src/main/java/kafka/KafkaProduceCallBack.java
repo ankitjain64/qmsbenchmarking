@@ -14,10 +14,12 @@ public class KafkaProduceCallBack implements Callback {
 
     @Override
     public void onCompletion(RecordMetadata metadata, Exception exception) {
-        if (exception != null) {
-            stats.incrementFailCount();
-        } else {
-            stats.incrementAckCount();
+        synchronized (this.stats) {
+            if (exception != null) {
+                stats.incrementFailCount();
+            } else {
+                stats.incrementAckCount();
+            }
         }
     }
 }
