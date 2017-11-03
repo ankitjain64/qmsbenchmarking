@@ -11,7 +11,6 @@ import static utils.Utils.getCurrentTime;
  */
 public abstract class BaseConsumer implements Consumer {
 
-    private long lastStatTime;
     private PropFileReader propFileReader;
     protected int id;
     protected final Stats stats;
@@ -22,13 +21,13 @@ public abstract class BaseConsumer implements Consumer {
         this.propFileReader = propFileReader;
         long currentTime = getCurrentTime();
         this.stats = new Stats(currentTime);
-        lastStatTime = currentTime;
         String prefix = CONSUMER_ROLE_TYPE + "_" + id + ".";
         long statsAccumulationTime = propFileReader.getLongValue(prefix + STATS_ACCUMULATION_INTERVAL, 0L);
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("Stats accumulation time >0");
         }
         statsAccumulator = new StatsAccumulator(this, statsAccumulationTime);
+        new Thread(statsAccumulator).run();
     }
 
     protected void updateStats() {
@@ -39,6 +38,7 @@ public abstract class BaseConsumer implements Consumer {
 
     @Override
     public void stop() {
+        statsAccumulator.stop(this.getCurrentStatsSnapShot());
         doStop();
     }
 

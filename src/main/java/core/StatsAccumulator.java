@@ -3,6 +3,8 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Long.compare;
+
 public class StatsAccumulator implements Runnable {
     private QMSNode qmsNode;
     private final Long statsAccumulationTime;
@@ -32,9 +34,12 @@ public class StatsAccumulator implements Runnable {
         }
     }
 
-    public void stop(Stats stats) {
+    void stop(Stats stats) {
         this.flag = false;
-        stats.setEndTime(lastStatUpdateTime);
+        //handle race condition if any
+        if (compare(accumulatedStats.get(accumulatedStats.size() - 1).getEndTime(), lastStatUpdateTime) != 0) {
+            stats.setEndTime(lastStatUpdateTime);
+        }
         accumulatedStats.add(stats);
         System.out.println("Consumer: " + qmsNode.getId() + " has Stats: ");
         System.out.println(accumulatedStats);

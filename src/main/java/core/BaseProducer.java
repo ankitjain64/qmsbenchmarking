@@ -23,6 +23,7 @@ public abstract class BaseProducer implements Producer {
      * Stats for this producer
      */
     protected final Stats stats;
+    private final StatsAccumulator statsAccumulator;
 
     private PropFileReader propFileReader;
 
@@ -41,6 +42,7 @@ public abstract class BaseProducer implements Producer {
             throw new IllegalArgumentException("Expected Rate Limit >=0");
         }
         long currentTime = Utils.getCurrentTime();
+        startTime = currentTime;
         stats = new Stats(currentTime);
         totalMessageSentCount = 0L;
         long statsAccumulationTime = propFileReader.getLongValue(prefix +
@@ -48,12 +50,14 @@ public abstract class BaseProducer implements Producer {
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("Stats accumulation time >0");
         }
+        statsAccumulator = new StatsAccumulator(this, statsAccumulationTime);
         this.flag = true;
     }
 
     @Override
     public void run() {
         //TODO: Add How many message or how much time?
+        new Thread(statsAccumulator).run();
         while (flag) {
             long currentTime = Utils.getCurrentTime();
             if (Long.compare(rateLimit, 0L) != 0) {
@@ -80,6 +84,7 @@ public abstract class BaseProducer implements Producer {
     @Override
     public void stop() {
         this.flag = false;
+        statsAccumulator.stop(this.getCurrentStatsSnapShot());
         doStop();
     }
 
