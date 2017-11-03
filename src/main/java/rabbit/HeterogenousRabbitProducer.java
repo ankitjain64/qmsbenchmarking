@@ -1,14 +1,13 @@
-package kafka;
+package rabbit;
 
 import utils.PropFileReader;
 import utils.Utils;
 
+import java.io.IOException;
 import java.util.Random;
+import java.util.concurrent.TimeoutException;
 
-/**
- * Created by Maharia
- */
-public class HeterogenousKafkaProducer extends BaseKafkaProducer {
+public class HeterogenousRabbitProducer extends BaseRabbitProducer {
 
     private Random random;
     private static int charSize;
@@ -17,9 +16,9 @@ public class HeterogenousKafkaProducer extends BaseKafkaProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    HeterogenousKafkaProducer(int id, PropFileReader propFileReader) {
+    HeterogenousRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
         super(id, propFileReader);
-        this.random = new Random(0);
+        random = new Random(0);
     }
 
     @Override

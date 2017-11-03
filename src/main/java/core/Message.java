@@ -1,17 +1,31 @@
 package core;
 
+@SuppressWarnings("WeakerAccess")
 public class Message {
-
+    /**
+     * Message number
+     */
     private long num;
-
+    /**
+     * Text of the message
+     */
     private String text;
-
+    /**
+     * Id of the producer who generated it
+     */
     private int pId;
-
+    /**
+     * Id of the consumer who rcvd it
+     */
     private int cId;
-
+    /**
+     * Producer generated time stamp
+     */
     private Long pTs;
 
+    /**
+     * Consumer Rcvd Time Stamp
+     */
     private Long cTs;
 
     /**

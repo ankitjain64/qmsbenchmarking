@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static core.BenchMarkingConstants.CONSUMER_ROLE_TYPE;
-import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 import static core.BenchMarkingConstants.STATS_ACCUMULATION_INTERVAL;
 
 /**
@@ -19,7 +18,7 @@ public abstract class BaseConsumer implements Consumer {
     private final Long statsAccumulationTime;
     private PropFileReader propFileReader;
     protected int id;
-    protected Stats stats;
+    protected final Stats stats;
     private List<Stats> accumulatedStats;
     private long lastStatUpdateTime;
 
@@ -38,13 +37,21 @@ public abstract class BaseConsumer implements Consumer {
     }
 
     protected void updateStats() {
-        stats.incrementRcvCount();
-        long currentTime = Utils.getCurrentTime();
-        if (Long.compare(currentTime - lastStatTime, statsAccumulationTime) >= 0) {
-            accumulatedStats.add(new Stats(stats, currentTime));
-            lastStatTime = currentTime;
+        synchronized (this.stats) {
+            stats.incrementRcvCount();
+            long currentTime = Utils.getCurrentTime();
+            accumulateStatsIfRequired(currentTime);
         }
-        lastStatUpdateTime = currentTime;
+    }
+
+    private void accumulateStatsIfRequired(long currentTime) {
+        synchronized (this.stats) {
+            if (Long.compare(currentTime - lastStatTime, statsAccumulationTime) >= 0) {
+                accumulatedStats.add(new Stats(stats, currentTime));
+                lastStatTime = currentTime;
+            }
+            lastStatUpdateTime = currentTime;
+        }
     }
 
     @Override

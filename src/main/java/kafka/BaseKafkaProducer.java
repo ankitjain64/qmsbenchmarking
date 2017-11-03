@@ -20,14 +20,13 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
 /**
  * Created by Maharia
  */
-@SuppressWarnings("WeakerAccess")
 public abstract class BaseKafkaProducer extends BaseProducer {
 
     protected final KafkaProducer<String, Message> producer;
-    protected final String topic;
+    private final String topic;
     private final int partition;
 
-    public BaseKafkaProducer(int id, PropFileReader propFileReader) {
+    BaseKafkaProducer(int id, PropFileReader propFileReader) {
         super(id, propFileReader);
         producer = new KafkaProducer<>(extractBaseKafkaProducerProperties(propFileReader));
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
@@ -47,7 +46,7 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         producer.send(new ProducerRecord<>(this.topic, this.partition, key, message), new KafkaProduceCallBack(this.stats));
     }
 
-    protected Properties extractBaseKafkaProducerProperties(PropFileReader propFileReader) {
+    private Properties extractBaseKafkaProducerProperties(PropFileReader propFileReader) {
         Properties properties = new Properties();
         properties.setProperty(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(VALUE_SERIALIZER_CLASS_CONFIG, KafkaMessageSerializer.class.getName());

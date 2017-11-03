@@ -24,7 +24,6 @@ import static utils.Utils.getNodeIdPrefix;
 /**
  * Created by Maharia
  */
-@SuppressWarnings("WeakerAccess")
 public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
 
     private final KafkaConsumer<String, String> consumer;
@@ -32,7 +31,7 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
     private List<String> topics;
     private Long perRecordsConsumptionMs;
 
-    public BaseKafkaConsumer(int id, PropFileReader propFileReader) {
+    BaseKafkaConsumer(int id, PropFileReader propFileReader) {
         super(id, propFileReader);
         consumer = new KafkaConsumer<>(extractBaseKafkaConsumerProperties(propFileReader));
         String topicsCsv = propFileReader.getStringValue(CONSUMER_TOPIC_SUBSCRIPTION);

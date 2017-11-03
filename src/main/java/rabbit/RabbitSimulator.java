@@ -3,9 +3,12 @@ package rabbit;
 import core.BaseSimulator;
 import core.Consumer;
 import core.Producer;
-import core.Simulator;
 import utils.PropFileReader;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+import static core.BenchMarkingConstants.IS_HOMOGENOUS_MESSAGE_SYSTEM;
 import static core.BenchMarkingConstants.RABBIT_MQ;
 
 /**
@@ -20,11 +23,29 @@ public class RabbitSimulator extends BaseSimulator {
 
     @Override
     public Producer createProducerThread(int id, PropFileReader propFileReader) {
+        Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
+        if (isHomoGenous) {
+            try {
+                return new FixedLengthRabbitProducer(id, propFileReader);
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            return new HeterogenousRabbitProducer(id, propFileReader);
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     @Override
     public Consumer createConsumerThread(int id, PropFileReader propFileReader) {
+        try {
+            return new RabbitConsumer(id, propFileReader);
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

@@ -80,13 +80,15 @@ public abstract class BaseProducer implements Producer {
                     }
                 }
             }
-            if (Long.compare(currentTime - lastStatTime, statsAccumulationTime) >= 0) {
-                accumulatedStats.add(new Stats(stats, currentTime));
-                lastStatTime = currentTime;
+            synchronized (this.stats) {
+                if (Long.compare(currentTime - lastStatTime, statsAccumulationTime) >= 0) {
+                    accumulatedStats.add(new Stats(stats, currentTime));
+                    lastStatTime = currentTime;
+                }
+                stats.incrementSendCount();
             }
             Message message = new Message(this.id, currentTime, totalMessageSentCount);
             doProduce(message);
-            stats.incrementSendCount();
             totalMessageSentCount++;
         }
     }

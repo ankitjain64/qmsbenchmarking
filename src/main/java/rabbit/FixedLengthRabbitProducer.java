@@ -1,16 +1,17 @@
-package kafka;
+package rabbit;
 
 import utils.PropFileReader;
 import utils.Utils;
 
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import static core.BenchMarkingConstants.MESSAGE_SIZE;
 import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 
-/**
- * Created by Maharia
- */
-public class FixedLengthMsgBaseKafkaProducer extends BaseKafkaProducer {
+public class FixedLengthRabbitProducer extends BaseRabbitProducer {
 
+    private int messageSize;
     private static int charSize;
     private String message;
 
@@ -18,12 +19,11 @@ public class FixedLengthMsgBaseKafkaProducer extends BaseKafkaProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    FixedLengthMsgBaseKafkaProducer(int id, PropFileReader propFileReader) {
-        //TODO: Fix this
+    FixedLengthRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
         super(id, propFileReader);
         String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
-        int messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
-        this.message = Utils.generateMessageText(messageSize, charSize);
+        this.messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
+        message = Utils.generateMessageText(messageSize, charSize);
     }
 
     @Override

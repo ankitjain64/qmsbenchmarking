@@ -4,12 +4,11 @@ import core.Stats;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-@SuppressWarnings("WeakerAccess")
 public class KafkaProduceCallBack implements Callback {
 
     private Stats stats;
 
-    public KafkaProduceCallBack(Stats stats) {
+    KafkaProduceCallBack(Stats stats) {
         this.stats = stats;
     }
 
