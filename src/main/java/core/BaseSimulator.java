@@ -45,7 +45,7 @@ public abstract class BaseSimulator implements Simulator {
                 }
                 executorService.shutdown();
                 try {
-                    executorService.awaitTermination(5000, TimeUnit.MILLISECONDS);
+                    executorService.awaitTermination(10000, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

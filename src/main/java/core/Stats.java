@@ -95,7 +95,9 @@ public class Stats {
     }
 
     public void setOutofOrder(boolean outofOrder) {
-        isOutofOrder = outofOrder;
+        if (!this.isOutofOrder) {
+            isOutofOrder = outofOrder;
+        }
     }
 
     public static String getCsvHeaders() {

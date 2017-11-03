@@ -39,8 +39,8 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
         queueName = propFileReader.getStringValue(prefix + QUEUE_NAME);
         if (Utils.isNull(queueName)) {
             queueName = channel.queueDeclare().getQueue();
-            channel.queueBind(queueName, exchangeName, routngKey);
         }
+        channel.queueBind(queueName, exchangeName, routngKey);
     }
 
     @Override

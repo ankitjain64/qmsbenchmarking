@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import static core.BenchMarkingConstants.CONSUMER_ROLE_TYPE;
+import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static rabbit.RabbitProperties.*;
 import static utils.Utils.getNodeIdPrefix;
@@ -21,9 +22,9 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final Connection connection;
     private final Channel channel;
     private final String exchangeName;
-    private final String exchahgeType;
-    private final Boolean isDurbleExchange;
-    private final String routngKey;
+    private final String exchangeType;
+    private final Boolean isDurableExchange;
+    private final String routingKey;
 
     BaseRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
         super(id, propFileReader);
@@ -33,12 +34,12 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         channel = connection.createChannel();
         String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);
         exchangeName = propFileReader.getStringValue(prefix + EXCHANGE_NAME);
-        exchahgeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
-        routngKey = propFileReader.getStringValue(prefix + ROUTING_KEY);
-        isDurbleExchange = propFileReader.getBooleanValue(prefix + EXCHANGE_IS_DURABLE, false);
+        exchangeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
+        routingKey = propFileReader.getStringValue(prefix + ROUTING_KEY);
+        isDurableExchange = propFileReader.getBooleanValue(prefix + EXCHANGE_IS_DURABLE, false);
 
         //TODO: experiment with auto delete
-        channel.exchangeDeclare(exchangeName, exchahgeType, isDurbleExchange);
+        channel.exchangeDeclare(exchangeName, exchangeType, isDurableExchange);
     }
 
     @Override
@@ -58,8 +59,9 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     @Override
     protected void doProduce(Message message) {
         message.setText(getMessageText());
+        message.setOrderKey(valueOf(channel.getChannelNumber()));
         try {
-            channel.basicPublish(this.exchangeName, this.routngKey, null, toJson(message).getBytes(UTF_8));
+            channel.basicPublish(this.exchangeName, this.routingKey, null, toJson(message).getBytes(UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
