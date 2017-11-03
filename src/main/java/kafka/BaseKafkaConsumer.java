@@ -2,6 +2,7 @@ package kafka;
 
 import core.BaseConsumer;
 import core.Consumer;
+import core.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -26,7 +27,7 @@ import static utils.Utils.getNodeIdPrefix;
  */
 public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
 
-    private final KafkaConsumer<String, String> consumer;
+    private final KafkaConsumer<String, Message> consumer;
     private final Long pollTimeoutMs;
     private List<String> topics;
     private Long perRecordsConsumptionMs;
@@ -55,9 +56,9 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
             consumer.subscribe(topics);
             //noinspection InfiniteLoopStatement
             while (true) {
-                ConsumerRecords<String, String> records = consumer.poll(pollTimeoutMs);
-                for (ConsumerRecord<String, String> record : records) {
-                    updateStats();
+                ConsumerRecords<String, Message> records = consumer.poll(pollTimeoutMs);
+                for (ConsumerRecord<String, Message> record : records) {
+                    updateStats(record.value());
                     //TODO: Store to stable storage in async fashion
                     if (Long.compare(perRecordsConsumptionMs, 0) != 0) {
                         Thread.sleep(perRecordsConsumptionMs);
