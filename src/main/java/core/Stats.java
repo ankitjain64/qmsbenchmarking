@@ -32,6 +32,8 @@ public class Stats {
      */
     private Long ackCount;
 
+    private boolean isOutofOrder;
+
     public Stats(Long startTime) {
         this.startTime = startTime;
         this.endTime = null;
@@ -39,6 +41,7 @@ public class Stats {
         this.rcvCount = 0L;
         this.failedCount = 0L;
         this.ackCount = 0L;
+        this.isOutofOrder = false;
     }
 
     public Stats createSnapShot(long endTime) {
@@ -87,6 +90,13 @@ public class Stats {
         return rcvCount;
     }
 
+    public boolean isOutofOrder() {
+        return isOutofOrder;
+    }
+
+    public void setOutofOrder(boolean outofOrder) {
+        isOutofOrder = outofOrder;
+    }
 
     public static String getCsvHeaders() {
         StringBuilder sb = new StringBuilder();
@@ -95,7 +105,8 @@ public class Stats {
         sb.append("Send Count").append(",");
         sb.append("Rcv Count").append(",");
         sb.append("Fail Count").append(",");
-        sb.append("Ack Count");
+        sb.append("Ack Count").append(",");
+        sb.append("Out of order");
         return sb.toString();
     }
 
@@ -106,7 +117,8 @@ public class Stats {
         sb.append(this.sendCount).append(",");
         sb.append(this.rcvCount).append(",");
         sb.append(this.failedCount).append(",");
-        sb.append(this.ackCount);
+        sb.append(this.ackCount).append(",");
+        sb.append(this.isOutofOrder);
         return sb.toString();
     }
 

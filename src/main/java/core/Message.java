@@ -30,6 +30,7 @@ public class Message {
 
     /**
      * We need to check order for the key which have same values
+     * TODO: Might need to work for it
      */
     private String orderKey;
 
@@ -39,12 +40,36 @@ public class Message {
         this.num = messageNumber;
     }
 
+    public long getNum() {
+        return num;
+    }
+
+    public void setNum(long num) {
+        this.num = num;
+    }
+
     public String getText() {
         return text;
     }
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public int getpId() {
+        return pId;
+    }
+
+    public void setpId(int pId) {
+        this.pId = pId;
+    }
+
+    public int getcId() {
+        return cId;
+    }
+
+    public void setcId(int cId) {
+        this.cId = cId;
     }
 
     public Long getpTs() {
