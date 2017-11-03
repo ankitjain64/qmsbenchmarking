@@ -1,4 +1,3 @@
-import core.BenchMarkingConstants;
 import core.Simulator;
 import core.SimulatorRegistry;
 import utils.PropFileReader;

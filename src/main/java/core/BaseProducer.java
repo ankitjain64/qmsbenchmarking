@@ -24,6 +24,7 @@ public abstract class BaseProducer implements Producer {
      */
     protected final Stats stats;
     private final StatsAccumulator statsAccumulator;
+    private final Long totalMessagesToSend;
 
     private PropFileReader propFileReader;
 
@@ -45,12 +46,13 @@ public abstract class BaseProducer implements Producer {
         startTime = currentTime;
         stats = new Stats(currentTime);
         totalMessageSentCount = 0L;
-        long statsAccumulationTime = propFileReader.getLongValue(prefix +
-                STATS_ACCUMULATION_INTERVAL);
+        long statsAccumulationTime = propFileReader.getLongValue(prefix + STATS_ACCUMULATION_INTERVAL);
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("Stats accumulation time >0");
         }
-        statsAccumulator = new StatsAccumulator(this, statsAccumulationTime);
+        String statsOutputPath = propFileReader.getStringValue(prefix + STATS_OUTPUT_PATH);
+        statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
+        this.totalMessagesToSend = (propFileReader.getLongValue(prefix + TOTAL_MESSAGE_TO_SEND, 100000L));
         this.flag = true;
     }
 
@@ -78,14 +80,19 @@ public abstract class BaseProducer implements Producer {
             Message message = new Message(this.id, currentTime, totalMessageSentCount);
             doProduce(message);
             totalMessageSentCount++;
+            if (totalMessageSentCount == totalMessagesToSend) {
+                this.stop();
+            }
         }
     }
 
     @Override
     public void stop() {
-        this.flag = false;
-        statsAccumulator.stop(this.getCurrentStatsSnapShot());
-        doStop();
+        if (this.flag) {
+            this.flag = false;
+            statsAccumulator.stop(this.getCurrentStatsSnapShot());
+            doStop();
+        }
     }
 
     @Override

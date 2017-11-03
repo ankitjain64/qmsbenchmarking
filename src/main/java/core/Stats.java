@@ -87,6 +87,29 @@ public class Stats {
         return rcvCount;
     }
 
+
+    public static String getCsvHeaders() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Start Time").append(",");
+        sb.append("End Time").append(",");
+        sb.append("Send Count").append(",");
+        sb.append("Rcv Count").append(",");
+        sb.append("Fail Count").append(",");
+        sb.append("Ack Count");
+        return sb.toString();
+    }
+
+    public String getRowValues() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.startTime).append(",");
+        sb.append(this.endTime).append(",");
+        sb.append(this.sendCount).append(",");
+        sb.append(this.rcvCount).append(",");
+        sb.append(this.failedCount).append(",");
+        sb.append(this.ackCount);
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         return "Stats{" +
