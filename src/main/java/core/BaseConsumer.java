@@ -18,7 +18,6 @@ public abstract class BaseConsumer implements Consumer {
     protected final Stats stats;
     private final StatsAccumulator statsAccumulator;
     private final String statsOutputPath;
-    private Message lastMessage;
 
     private Map<Integer, Map<String, Message>> producerIdVsOrderKeyVsMessage;
 
