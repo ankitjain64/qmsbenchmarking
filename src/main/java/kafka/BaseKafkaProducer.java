@@ -43,6 +43,7 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     protected void doProduce(Message message) {
         String key = this.id + "_" + this.totalMessageSentCount;
         message.setText(getMessageText());
+        //need to check order across partitions
         message.setOrderKey(String.valueOf(this.partition));
         producer.send(new ProducerRecord<>(this.topic, this.partition, key, message), new KafkaProduceCallBack(this.stats));
     }
