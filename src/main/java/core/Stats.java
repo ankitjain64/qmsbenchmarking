@@ -41,11 +41,14 @@ public class Stats {
         this.ackCount = 0L;
     }
 
-    public Stats(Stats other, long endTime) {
-        this.startTime = other.startTime;
-        this.endTime = endTime;
-        this.sendCount = other.sendCount;
-        this.rcvCount = other.rcvCount;
+    public Stats createSnapShot(long endTime) {
+        synchronized (this) {
+            Stats stats = new Stats(this.startTime);
+            stats.endTime = endTime;
+            stats.sendCount = this.sendCount;
+            stats.rcvCount = this.rcvCount;
+            return stats;
+        }
     }
 
     public void incrementSendCount() {

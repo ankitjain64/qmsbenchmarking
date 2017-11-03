@@ -3,10 +3,8 @@ package core;
 import utils.PropFileReader;
 import utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static core.BenchMarkingConstants.*;
+import static utils.Utils.getCurrentTime;
 
 /**
  * Created By Maharia
@@ -26,17 +24,11 @@ public abstract class BaseProducer implements Producer {
      */
     protected final Stats stats;
 
-    private List<Stats> accumulatedStats;
-
     private PropFileReader propFileReader;
 
     private Long startTime;
 
-    private Long lastStatTime;
-
     protected long totalMessageSentCount;
-
-    private long statsAccumulationTime;
 
     private boolean flag;
 
@@ -50,10 +42,9 @@ public abstract class BaseProducer implements Producer {
         }
         long currentTime = Utils.getCurrentTime();
         stats = new Stats(currentTime);
-        accumulatedStats = new ArrayList<>();
         totalMessageSentCount = 0L;
-        lastStatTime = currentTime;
-        statsAccumulationTime = propFileReader.getLongValue(prefix + STATS_ACCUMULATION_INTERVAL);
+        long statsAccumulationTime = propFileReader.getLongValue(prefix +
+                STATS_ACCUMULATION_INTERVAL);
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("Stats accumulation time >0");
         }
@@ -80,13 +71,6 @@ public abstract class BaseProducer implements Producer {
                     }
                 }
             }
-            synchronized (this.stats) {
-                if (Long.compare(currentTime - lastStatTime, statsAccumulationTime) >= 0) {
-                    accumulatedStats.add(new Stats(stats, currentTime));
-                    lastStatTime = currentTime;
-                }
-                stats.incrementSendCount();
-            }
             Message message = new Message(this.id, currentTime, totalMessageSentCount);
             doProduce(message);
             totalMessageSentCount++;
@@ -96,11 +80,19 @@ public abstract class BaseProducer implements Producer {
     @Override
     public void stop() {
         this.flag = false;
-        stats.setEndTime(Utils.getCurrentTime());
-        accumulatedStats.add(stats);
-        System.out.println("Producer: " + this.id + "Stats: ");
-        System.out.println(accumulatedStats);
         doStop();
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
+    @Override
+    public Stats getCurrentStatsSnapShot() {
+        synchronized (this.stats) {
+            return this.stats.createSnapShot(getCurrentTime());
+        }
     }
 
     protected abstract void doStop();
