@@ -6,7 +6,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 public class KafkaProduceCallBack implements Callback {
 
-    private Stats stats;
+    private final Stats stats;
 
     KafkaProduceCallBack(Stats stats) {
         this.stats = stats;
