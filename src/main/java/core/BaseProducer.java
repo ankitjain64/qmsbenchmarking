@@ -6,9 +6,7 @@ import utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
-import static core.BenchMarkingConstants.SEND_RATE_LIMIT;
-import static core.BenchMarkingConstants.STATS_ACCUMULATION_INTERVAL;
+import static core.BenchMarkingConstants.*;
 
 /**
  * Created By Maharia
@@ -45,7 +43,7 @@ public abstract class BaseProducer implements Producer {
     public BaseProducer(int id, PropFileReader propFileReader) {
         this.id = id;
         this.propFileReader = propFileReader;
-        String prefix = PRODUCER_ROLE_TYPE + "_" + id + ".";
+        String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         rateLimit = propFileReader.getLongValue(prefix + SEND_RATE_LIMIT);
         if (Long.compare(rateLimit, 0) < 0) {
             throw new IllegalArgumentException("Expected Rate Limit >=0");
@@ -64,6 +62,7 @@ public abstract class BaseProducer implements Producer {
 
     @Override
     public void run() {
+        //TODO: Add How many message or how much time?
         while (flag) {
             long currentTime = Utils.getCurrentTime();
             if (Long.compare(rateLimit, 0L) != 0) {

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Maharia
@@ -17,6 +18,8 @@ public class Utils {
      * GSON is thread safe, and can be used as a static variable.
      */
     public static final Gson GSON_INSTANCE = new Gson();
+    public static final int MAX_BYTE_SIZE = 1024;
+    public static final int MIN_BYTE_SIZE = 64;
 
 
     public static <T> boolean isNull(T input) {
@@ -90,5 +93,23 @@ public class Utils {
 
     public static long getCurrentTime() {
         return new Date().getTime();
+    }
+
+    public static String getNodeIdPrefix(String role, int id) {
+        return role + "_" + id + ".";
+    }
+
+    public static String generateMessageText(int messageSize, int charSize) {
+        int numberOfChars = messageSize / charSize;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < numberOfChars; i++) {
+            sb.append('a');
+        }
+        return sb.toString();
+    }
+
+    public static String generateHeterogenousText(Random random, int charSize) {
+        int size = random.nextInt((MAX_BYTE_SIZE - MIN_BYTE_SIZE) + 1) + MIN_BYTE_SIZE;
+        return generateMessageText(size, charSize);
     }
 }

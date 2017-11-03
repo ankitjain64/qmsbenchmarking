@@ -4,32 +4,32 @@ import utils.PropFileReader;
 import utils.Utils;
 
 import static core.BenchMarkingConstants.MESSAGE_SIZE;
+import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 
 /**
  * Created by Maharia
  */
-@SuppressWarnings("FieldCanBeLocal")
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class FixedLengthMsgBaseKafkaProducer extends BaseKafkaProducer {
 
     private int messageSize;
-    private int charSize;
+    private static int charSize;
     private String message;
+
+    static {
+        charSize = Utils.getCharByteSize();
+    }
 
     public FixedLengthMsgBaseKafkaProducer(int id, PropFileReader propFileReader) {
         //TODO: Fix this
         super(id, propFileReader);
-        this.messageSize = propFileReader.getIntegerValue(MESSAGE_SIZE);
-        this.charSize = Utils.getCharByteSize();
-        int numberOfChars = messageSize / charSize;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < numberOfChars; i++) {
-            sb.append('a');
-        }
-        this.message = sb.toString();
+        String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
+        this.messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
+        this.message = Utils.generateMessageText(messageSize, charSize);
     }
 
     @Override
-    protected String getMessage() {
+    protected String getMessageText() {
         return message;
     }
 }

@@ -3,6 +3,7 @@ package core;
 /**
  * Created By Maharia
  */
+@SuppressWarnings("WeakerAccess")
 public class Stats {
     /**
      * Time of start of the experiment
@@ -21,11 +22,23 @@ public class Stats {
      */
     private Long rcvCount;
 
+    /**
+     * Failed count of the messages
+     */
+    private Long failedCount;
+
+    /**
+     * Total acked Messages
+     */
+    private Long ackCount;
+
     public Stats(Long startTime) {
         this.startTime = startTime;
         this.endTime = null;
         this.sendCount = 0L;
         this.rcvCount = 0L;
+        this.failedCount = 0L;
+        this.ackCount = 0L;
     }
 
     public Stats(Stats other, long endTime) {
@@ -41,6 +54,14 @@ public class Stats {
 
     public void incrementRcvCount() {
         this.rcvCount++;
+    }
+
+    public void incrementFailCount() {
+        this.failedCount++;
+    }
+
+    public void incrementAckCount() {
+        this.ackCount++;
     }
 
     public void setEndTime(Long endTime) {
