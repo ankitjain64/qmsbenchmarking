@@ -1,5 +1,6 @@
 package utils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -11,19 +12,20 @@ public class PropFileReader extends BasePropertyReader {
     private Properties properties;
 
     public PropFileReader(String propFileName) {
-        InputStream stream;
-        stream = PropFileReader.class.getClassLoader().getResourceAsStream(propFileName);
-        properties = new Properties();
+        InputStream stream = null;
         try {
+            stream = new FileInputStream(propFileName);
+            properties = new Properties();
             properties.load(stream);
         } catch (IOException e) {
-            throw new RuntimeException("[FATAL] Unable to load properties file");
+            e.printStackTrace();
         } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                //suppress
-                //todo add logging here later on
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
