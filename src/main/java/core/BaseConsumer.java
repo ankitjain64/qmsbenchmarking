@@ -40,6 +40,7 @@ public abstract class BaseConsumer implements Consumer {
 
     protected void updateStats(Message message) {
         synchronized (this.stats) {
+            //System.out.println("Updating stats");
             Map<String, Message> orderKeyVsMessage = producerIdVsOrderKeyVsMessage.get(message.getpId());
             boolean isOutOfOrder = false;
             if (orderKeyVsMessage == null) {
@@ -48,11 +49,11 @@ public abstract class BaseConsumer implements Consumer {
             }
             Message existing = orderKeyVsMessage.get(message.getOrderKey());
             if (existing != null) {
-                isOutOfOrder = message.constructMessageId().compareTo(existing.constructMessageId()) < 0;
+                isOutOfOrder = Long.compare(message.getNum(),existing.getNum()) < 0;
             }
             boolean isGlobalOutOfOrder = false;
             if (lastMessage != null) {
-                isGlobalOutOfOrder = message.constructMessageId().compareTo(lastMessage.constructMessageId()) < 0;
+                isGlobalOutOfOrder = Long.compare(message.getNum(),lastMessage.getNum()) < 0;
             }
             lastMessage = message;
             orderKeyVsMessage.put(message.getOrderKey(), message);
