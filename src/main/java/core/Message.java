@@ -100,6 +100,10 @@ public class Message {
         return this.pId + "." + this.num;
     }
 
+    public Long getDelta() {
+        return this.cTs - this.pTs;
+    }
+
     @Override
     public String toString() {
         return "Message{" +

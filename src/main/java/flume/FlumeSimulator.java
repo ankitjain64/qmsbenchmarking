@@ -3,8 +3,9 @@ package flume;
 import core.BaseSimulator;
 import core.Consumer;
 import core.Producer;
-import core.Simulator;
 import utils.PropFileReader;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.FLUME;
 
@@ -19,7 +20,7 @@ public class FlumeSimulator extends BaseSimulator {
     }
 
     @Override
-    public Producer createProducerThread(int id, PropFileReader propFileReader) {
+    public Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         return null;
     }
 

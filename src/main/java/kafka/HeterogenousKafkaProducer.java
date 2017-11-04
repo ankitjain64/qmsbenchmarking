@@ -4,6 +4,7 @@ import utils.PropFileReader;
 import utils.Utils;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by Maharia
@@ -17,8 +18,8 @@ public class HeterogenousKafkaProducer extends BaseKafkaProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    HeterogenousKafkaProducer(int id, PropFileReader propFileReader) {
-        super(id, propFileReader);
+    HeterogenousKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, propFileReader, atomicLong);
         this.random = new Random(0);
     }
 

@@ -102,6 +102,7 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         Message message = Utils.fromJson(body, Message.class);
+        message.setcTs(Utils.getCurrentTime());
         updateStats(message);
         if (Long.compare(perRecordsConsumptionMs, 0) != 0) {
             try {

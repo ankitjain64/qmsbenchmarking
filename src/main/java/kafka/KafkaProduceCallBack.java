@@ -3,6 +3,7 @@ package kafka;
 import core.Stats;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import utils.Utils;
 
 public class KafkaProduceCallBack implements Callback {
 
@@ -14,12 +15,10 @@ public class KafkaProduceCallBack implements Callback {
 
     @Override
     public void onCompletion(RecordMetadata metadata, Exception exception) {
-        synchronized (this.stats) {
-            if (exception != null) {
-                stats.incrementFailCount();
-            } else {
-                stats.incrementAckCount();
-            }
+        if (exception != null) {
+            stats.incrementFailCount();
+        } else {
+            stats.incrementAckCountAndLatency(Utils.getCurrentTime() - metadata.timestamp());
         }
     }
 }

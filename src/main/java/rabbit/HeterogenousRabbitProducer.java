@@ -6,6 +6,7 @@ import utils.Utils;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class HeterogenousRabbitProducer extends BaseRabbitProducer {
 
@@ -16,8 +17,8 @@ public class HeterogenousRabbitProducer extends BaseRabbitProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    HeterogenousRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
-        super(id, propFileReader);
+    HeterogenousRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, propFileReader,atomicLong);
         random = new Random(0);
     }
 

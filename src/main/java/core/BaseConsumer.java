@@ -49,15 +49,15 @@ public abstract class BaseConsumer implements Consumer {
             }
             Message existing = orderKeyVsMessage.get(message.getOrderKey());
             if (existing != null) {
-                isOutOfOrder = Long.compare(message.getNum(),existing.getNum()) < 0;
+                isOutOfOrder = Long.compare(message.getNum(), existing.getNum()) < 0;
             }
             boolean isGlobalOutOfOrder = false;
             if (lastMessage != null) {
-                isGlobalOutOfOrder = Long.compare(message.getNum(),lastMessage.getNum()) < 0;
+                isGlobalOutOfOrder = Long.compare(message.getNum(), lastMessage.getNum()) < 0;
             }
             lastMessage = message;
             orderKeyVsMessage.put(message.getOrderKey(), message);
-            stats.incrementRcvCount();
+            stats.incrementRcvCountAndLatency(message.getDelta());
             stats.setOutofOrder(isOutOfOrder);
             stats.setGlobalOutOfOrder(isGlobalOutOfOrder);
         }

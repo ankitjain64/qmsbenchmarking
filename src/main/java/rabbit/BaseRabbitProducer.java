@@ -9,6 +9,7 @@ import utils.PropFileReader;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.CONSUMER_ROLE_TYPE;
 import static java.lang.String.valueOf;
@@ -26,8 +27,8 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final Boolean isDurableExchange;
     private final String routingKey;
 
-    BaseRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
-        super(id, propFileReader);
+    BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, propFileReader, atomicLong);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(propFileReader.getStringValue(HOST));
         connection = factory.newConnection();

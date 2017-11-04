@@ -9,6 +9,7 @@ import utils.PropFileReader;
 import utils.Utils;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 import static kafka.KafkaProperties.*;
@@ -26,8 +27,8 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     private final String topic;
     private final int partition;
 
-    BaseKafkaProducer(int id, PropFileReader propFileReader) {
-        super(id, propFileReader);
+    BaseKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, propFileReader, atomicLong);
         producer = new KafkaProducer<>(extractBaseKafkaProducerProperties(propFileReader));
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         topic = propFileReader.getStringValue(prefix + PRODUCER_TOPIC);
@@ -45,7 +46,9 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         message.setText(getMessageText());
         //need to check order across partitions
         message.setOrderKey(String.valueOf(this.partition));
-        producer.send(new ProducerRecord<>(this.topic, this.partition, key, message), new KafkaProduceCallBack(this.stats));
+        ProducerRecord<String, Message> record = new ProducerRecord<>(this.topic, this.partition, message.getpTs(), key, message);
+        KafkaProduceCallBack callback = new KafkaProduceCallBack(this.stats);
+        producer.send(record, callback);
     }
 
     private Properties extractBaseKafkaProducerProperties(PropFileReader propFileReader) {

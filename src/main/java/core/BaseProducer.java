@@ -3,6 +3,8 @@ package core;
 import utils.PropFileReader;
 import utils.Utils;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import static core.BenchMarkingConstants.*;
 import static utils.Utils.getCurrentTime;
 
@@ -29,13 +31,15 @@ public abstract class BaseProducer implements Producer {
 
     private PropFileReader propFileReader;
 
+    private AtomicLong atomicLong;
+
     private Long startTime;
 
     protected long totalMessageSentCount;
 
     private boolean flag;
 
-    public BaseProducer(int id, PropFileReader propFileReader) {
+    public BaseProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         this.id = id;
         this.propFileReader = propFileReader;
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
@@ -55,6 +59,7 @@ public abstract class BaseProducer implements Producer {
         statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
         statsAccumulatorThread = new Thread(statsAccumulator);
         this.totalMessagesToSend = (propFileReader.getLongValue(prefix + TOTAL_MESSAGE_TO_SEND, 100000L));
+        this.atomicLong = atomicLong;
         this.flag = true;
     }
 
@@ -79,7 +84,8 @@ public abstract class BaseProducer implements Producer {
                     }
                 }
             }
-            Message message = new Message(this.id, currentTime, totalMessageSentCount);
+            long messageNumber = atomicLong.getAndIncrement();
+            Message message = new Message(this.id, Utils.getCurrentTime(), messageNumber);
             doProduce(message);
             totalMessageSentCount++;
             updateStats();

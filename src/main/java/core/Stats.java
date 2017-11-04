@@ -32,9 +32,12 @@ public class Stats {
      */
     private Long ackCount;
 
+    private Long totalLatency;
+
     private boolean isOutofOrder;
 
     private boolean isGlobalOutOfOrder;
+
 
     public Stats(Long startTime) {
         this.startTime = startTime;
@@ -43,6 +46,7 @@ public class Stats {
         this.rcvCount = 0L;
         this.failedCount = 0L;
         this.ackCount = 0L;
+        this.totalLatency = 0L;
         this.isOutofOrder = false;
         this.isGlobalOutOfOrder = false;
     }
@@ -57,6 +61,7 @@ public class Stats {
             stats.isOutofOrder = this.isOutofOrder;
             stats.isGlobalOutOfOrder = this.isGlobalOutOfOrder;
             stats.failedCount = this.failedCount;
+            stats.totalLatency = this.totalLatency;
             return stats;
         }
     }
@@ -67,9 +72,10 @@ public class Stats {
         }
     }
 
-    public void incrementRcvCount() {
+    public void incrementRcvCountAndLatency(long delta) {
         synchronized (this) {
             this.rcvCount++;
+            this.totalLatency += delta;
         }
     }
 
@@ -79,9 +85,10 @@ public class Stats {
         }
     }
 
-    public void incrementAckCount() {
+    public void incrementAckCountAndLatency(long delta) {
         synchronized (this) {
             this.ackCount++;
+            this.totalLatency += delta;
         }
     }
 
@@ -135,8 +142,9 @@ public class Stats {
         sb.append("Rcv Count").append(",");
         sb.append("Fail Count").append(",");
         sb.append("Ack Count").append(",");
+        sb.append("Total Latency").append("\n");
         sb.append("Out of order").append(",");
-        sb.append("Global Out of order").append("\n");
+        sb.append("Global Out of order").append(",");
         return sb.toString();
     }
 
@@ -148,6 +156,7 @@ public class Stats {
         sb.append(this.rcvCount).append(",");
         sb.append(this.failedCount).append(",");
         sb.append(this.ackCount).append(",");
+        sb.append(this.totalLatency).append(",");
         sb.append(this.isOutofOrder).append(",");
         sb.append(this.isGlobalOutOfOrder).append("\n");
         return sb.toString();

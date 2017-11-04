@@ -5,6 +5,7 @@ import utils.Utils;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.MESSAGE_SIZE;
 import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
@@ -19,8 +20,8 @@ public class FixedLengthRabbitProducer extends BaseRabbitProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    FixedLengthRabbitProducer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
-        super(id, propFileReader);
+    FixedLengthRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, propFileReader, atomicLong);
         String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         this.messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
         message = Utils.generateMessageText(messageSize, charSize);

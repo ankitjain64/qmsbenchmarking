@@ -7,6 +7,7 @@ import utils.PropFileReader;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.IS_HOMOGENOUS_MESSAGE_SYSTEM;
 import static core.BenchMarkingConstants.RABBIT_MQ;
@@ -22,17 +23,17 @@ public class RabbitSimulator extends BaseSimulator {
     }
 
     @Override
-    public Producer createProducerThread(int id, PropFileReader propFileReader) {
+    public Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
         if (isHomoGenous) {
             try {
-                return new FixedLengthRabbitProducer(id, propFileReader);
+                return new FixedLengthRabbitProducer(id, propFileReader, atomicLong);
             } catch (IOException | TimeoutException e) {
                 e.printStackTrace();
             }
         }
         try {
-            return new HeterogenousRabbitProducer(id, propFileReader);
+            return new HeterogenousRabbitProducer(id, propFileReader, atomicLong);
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

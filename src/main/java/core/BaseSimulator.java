@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.*;
 
@@ -14,6 +15,12 @@ import static core.BenchMarkingConstants.*;
  * Created by Maharia
  */
 public abstract class BaseSimulator implements Simulator {
+
+    private AtomicLong atomicLong;
+
+    public BaseSimulator() {
+        atomicLong = new AtomicLong(0);
+    }
 
     @Override
     public void simulate(PropFileReader propFileReader) {
@@ -23,7 +30,7 @@ public abstract class BaseSimulator implements Simulator {
         final List<QMSNode> qmsNodes = new ArrayList<>();
         if (PRODUCER_ROLE_TYPE.equals(roleType)) {
             for (int i = 0; i < nodeCount; i++) {
-                qmsNodes.add(createProducerThread(i, propFileReader));
+                qmsNodes.add(createProducerThread(i, propFileReader, atomicLong));
             }
         } else if (CONSUMER_ROLE_TYPE.equals(roleType)) {
             for (int i = 0; i < nodeCount; i++) {
@@ -64,9 +71,10 @@ public abstract class BaseSimulator implements Simulator {
      * @param id             id of the producer
      * @param propFileReader prop file read to read properties while creating
      *                       the instance
+     * @param atomicLong
      * @return Producer instance
      */
-    public abstract Producer createProducerThread(int id, PropFileReader propFileReader);
+    public abstract Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong);
 
     public abstract Consumer createConsumerThread(int id, PropFileReader propFileReader);
 
