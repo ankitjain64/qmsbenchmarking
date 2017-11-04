@@ -35,7 +35,7 @@ public abstract class BaseConsumer implements Consumer {
             throw new IllegalArgumentException("Stats accumulation time >0");
         }
         statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, this.statsOutputPath);
-        new Thread(statsAccumulator).run();
+        new Thread(statsAccumulator).start();
     }
 
     protected void updateStats(Message message) {

@@ -23,8 +23,9 @@ public abstract class BaseProducer implements Producer {
      * Stats for this producer
      */
     protected final Stats stats;
-    private final StatsAccumulator statsAccumulator;
+    private final Thread statsAccumulatorThread;
     private final Long totalMessagesToSend;
+    private final StatsAccumulator statsAccumulator;
 
     private PropFileReader propFileReader;
 
@@ -52,6 +53,7 @@ public abstract class BaseProducer implements Producer {
         }
         String statsOutputPath = propFileReader.getStringValue(prefix + STATS_OUTPUT_PATH);
         statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
+        statsAccumulatorThread = new Thread(statsAccumulator);
         this.totalMessagesToSend = (propFileReader.getLongValue(prefix + TOTAL_MESSAGE_TO_SEND, 100000L));
         this.flag = true;
     }
@@ -59,7 +61,7 @@ public abstract class BaseProducer implements Producer {
     @Override
     public void run() {
         //TODO: Add How many message or how much time?
-        new Thread(statsAccumulator).run();
+        statsAccumulatorThread.start();
         while (flag) {
             long currentTime = Utils.getCurrentTime();
             if (Long.compare(rateLimit, 0L) != 0) {
@@ -68,7 +70,7 @@ public abstract class BaseProducer implements Producer {
                 //10 ms have elapsed(delta), we have sent 200 messages
                 //the 200 msgs we have actually sent should have taken us
                 //200 * 1000 / 5000 = 40 ms. So we pause for 40ms - 10ms
-                long pause = (long) (totalMessageSentCount * 1000.0) / (rateLimit - delta);
+                long pause = (long) ((totalMessageSentCount * 1000.0) / (rateLimit)) - delta;
                 if (pause > 0) {
                     try {
                         Thread.sleep(pause);
@@ -80,19 +82,19 @@ public abstract class BaseProducer implements Producer {
             Message message = new Message(this.id, currentTime, totalMessageSentCount);
             doProduce(message);
             totalMessageSentCount++;
+            updateStats();
             if (totalMessageSentCount == totalMessagesToSend) {
-                this.stop();
+                flag = false;
+                //do not stop the accumulator
             }
         }
     }
 
     @Override
     public void stop() {
-        if (this.flag) {
-            this.flag = false;
-            statsAccumulator.stop(this.getCurrentStatsSnapShot());
-            doStop();
-        }
+        this.flag = false;
+        this.statsAccumulator.stop(stats);
+        doStop();
     }
 
     @Override
@@ -100,11 +102,13 @@ public abstract class BaseProducer implements Producer {
         return this.id;
     }
 
+    private void updateStats() {
+        this.stats.incrementSendCount();
+    }
+
     @Override
     public Stats getCurrentStatsSnapShot() {
-        synchronized (this.stats) {
-            return this.stats.createSnapShot(getCurrentTime());
-        }
+        return this.stats.createSnapShot(getCurrentTime());
     }
 
     protected abstract void doStop();

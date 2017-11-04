@@ -62,23 +62,33 @@ public class Stats {
     }
 
     public void incrementSendCount() {
-        this.sendCount++;
+        synchronized (this) {
+            this.sendCount++;
+        }
     }
 
     public void incrementRcvCount() {
-        this.rcvCount++;
+        synchronized (this) {
+            this.rcvCount++;
+        }
     }
 
     public void incrementFailCount() {
-        this.failedCount++;
+        synchronized (this) {
+            this.failedCount++;
+        }
     }
 
     public void incrementAckCount() {
-        this.ackCount++;
+        synchronized (this) {
+            this.ackCount++;
+        }
     }
 
     public void setEndTime(Long endTime) {
-        this.endTime = endTime;
+        synchronized (this) {
+            this.endTime = endTime;
+        }
     }
 
     public Long getStartTime() {
@@ -126,7 +136,7 @@ public class Stats {
         sb.append("Fail Count").append(",");
         sb.append("Ack Count").append(",");
         sb.append("Out of order").append(",");
-        sb.append("Global Out of order");
+        sb.append("Global Out of order").append("\n");
         return sb.toString();
     }
 
@@ -139,7 +149,7 @@ public class Stats {
         sb.append(this.failedCount).append(",");
         sb.append(this.ackCount).append(",");
         sb.append(this.isOutofOrder).append(",");
-        sb.append(this.isGlobalOutOfOrder);
+        sb.append(this.isGlobalOutOfOrder).append("\n");
         return sb.toString();
     }
 
