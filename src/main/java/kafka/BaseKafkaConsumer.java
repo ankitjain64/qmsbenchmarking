@@ -35,6 +35,7 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
     BaseKafkaConsumer(int id, PropFileReader propFileReader) {
         super(id, propFileReader);
         consumer = new KafkaConsumer<>(extractBaseKafkaConsumerProperties(propFileReader));
+        //TODO: Fix me and change config
         String topicsCsv = propFileReader.getStringValue(CONSUMER_TOPIC_SUBSCRIPTION);
         topics = Utils.parseString(topicsCsv, ",");
         String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);

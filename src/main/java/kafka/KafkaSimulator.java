@@ -1,6 +1,9 @@
 package kafka;
 
-import core.*;
+import core.BaseSimulator;
+import core.BenchMarkingConstants;
+import core.Consumer;
+import core.Producer;
 import utils.PropFileReader;
 
 import static core.BenchMarkingConstants.IS_HOMOGENOUS_MESSAGE_SYSTEM;
@@ -17,6 +20,7 @@ public class KafkaSimulator extends BaseSimulator {
 
     @Override
     public Producer createProducerThread(int id, PropFileReader propFileReader) {
+        //TODO: Fix me and change config
         Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
         if (isHomoGenous) {
             return new FixedLengthMsgBaseKafkaProducer(id,propFileReader);
