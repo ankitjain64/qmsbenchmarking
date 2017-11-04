@@ -34,6 +34,8 @@ public class Stats {
 
     private boolean isOutofOrder;
 
+    private boolean isGlobalOutOfOrder;
+
     public Stats(Long startTime) {
         this.startTime = startTime;
         this.endTime = null;
@@ -42,6 +44,7 @@ public class Stats {
         this.failedCount = 0L;
         this.ackCount = 0L;
         this.isOutofOrder = false;
+        this.isGlobalOutOfOrder = false;
     }
 
     public Stats createSnapShot(long endTime) {
@@ -50,6 +53,10 @@ public class Stats {
             stats.endTime = endTime;
             stats.sendCount = this.sendCount;
             stats.rcvCount = this.rcvCount;
+            stats.ackCount = this.ackCount;
+            stats.isOutofOrder = this.isOutofOrder;
+            stats.isGlobalOutOfOrder = this.isGlobalOutOfOrder;
+            stats.failedCount = this.failedCount;
             return stats;
         }
     }
@@ -100,6 +107,16 @@ public class Stats {
         }
     }
 
+    public boolean isGlobalOutOfOrder() {
+        return isGlobalOutOfOrder;
+    }
+
+    public void setGlobalOutOfOrder(boolean globalOutOfOrder) {
+        if (!this.isGlobalOutOfOrder) {
+            isGlobalOutOfOrder = globalOutOfOrder;
+        }
+    }
+
     public static String getCsvHeaders() {
         StringBuilder sb = new StringBuilder();
         sb.append("Start Time").append(",");
@@ -108,7 +125,8 @@ public class Stats {
         sb.append("Rcv Count").append(",");
         sb.append("Fail Count").append(",");
         sb.append("Ack Count").append(",");
-        sb.append("Out of order");
+        sb.append("Out of order").append(",");
+        sb.append("Global Out of order");
         return sb.toString();
     }
 
@@ -120,7 +138,8 @@ public class Stats {
         sb.append(this.rcvCount).append(",");
         sb.append(this.failedCount).append(",");
         sb.append(this.ackCount).append(",");
-        sb.append(this.isOutofOrder);
+        sb.append(this.isOutofOrder).append(",");
+        sb.append(this.isGlobalOutOfOrder);
         return sb.toString();
     }
 
@@ -131,6 +150,10 @@ public class Stats {
                 ", endTime=" + endTime +
                 ", sendCount=" + sendCount +
                 ", rcvCount=" + rcvCount +
+                ", failedCount=" + failedCount +
+                ", ackCount=" + ackCount +
+                ", isOutofOrder=" + isOutofOrder +
+                ", isGlobalOutOfOrder=" + isGlobalOutOfOrder +
                 '}';
     }
 }

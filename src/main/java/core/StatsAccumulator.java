@@ -9,7 +9,7 @@ public class StatsAccumulator implements Runnable {
     private final Long statsAccumulationTime;
     private String statsOutputPath;
     //    private List<Stats> accumulatedStats;
-    private long lastStatUpdateTime;
+//    private long lastStatUpdateTime;
     private boolean flag;
 
     StatsAccumulator(QMSNode qmsNode, long statsAccumulationTime, String statsOutputPath) {
@@ -31,7 +31,7 @@ public class StatsAccumulator implements Runnable {
     public void run() {
         while (flag) {
             Stats stats = qmsNode.getCurrentStatsSnapShot();
-            this.lastStatUpdateTime = stats.getEndTime();
+//            this.lastStatUpdateTime = stats.getEndTime();
 //            accumulatedStats.add(stats);
             try {
                 fileWriter.write(stats.getRowValues());

@@ -20,6 +20,7 @@ public abstract class BaseConsumer implements Consumer {
     private final String statsOutputPath;
 
     private Map<Integer, Map<String, Message>> producerIdVsOrderKeyVsMessage;
+    private Message lastMessage;
 
     public BaseConsumer(int id, PropFileReader propFileReader) {
         this.id = id;
@@ -49,9 +50,15 @@ public abstract class BaseConsumer implements Consumer {
             if (existing != null) {
                 isOutOfOrder = message.constructMessageId().compareTo(existing.constructMessageId()) < 0;
             }
+            boolean isGlobalOutOfOrder = false;
+            if (lastMessage != null) {
+                isGlobalOutOfOrder = message.constructMessageId().compareTo(lastMessage.constructMessageId()) < 0;
+            }
+            lastMessage = message;
             orderKeyVsMessage.put(message.getOrderKey(), message);
             stats.incrementRcvCount();
             stats.setOutofOrder(isOutOfOrder);
+            stats.setGlobalOutOfOrder(isGlobalOutOfOrder);
         }
     }
 
