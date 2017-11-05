@@ -40,10 +40,7 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
         topics = Utils.parseString(topicsCsv, ",");
         String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);
         perRecordsConsumptionMs = propFileReader.getLongValue(prefix + PER_RECORD_CONSUMPTION_TIME_MS, 0L);
-        pollTimeoutMs = propFileReader.getLongValue(prefix + POLL_TIMEOUT_MS, 10000L);
-        if (pollTimeoutMs == 0) {
-            throw new IllegalArgumentException("Poll interval for consumer cannot be zero");
-        }
+        pollTimeoutMs = propFileReader.getLongValue(prefix + POLL_TIMEOUT_MS, 0L);
     }
 
     @Override
@@ -58,12 +55,15 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
             //noinspection InfiniteLoopStatement
             while (true) {
                 ConsumerRecords<String, Message> records = consumer.poll(pollTimeoutMs);
-                for (ConsumerRecord<String, Message> record : records) {
-                    updateStats(record.value());
-                    //TODO: Store to stable storage in async fashion
-                    if (Long.compare(perRecordsConsumptionMs, 0) != 0) {
-                        Thread.sleep(perRecordsConsumptionMs);
+                if (records != null && !records.isEmpty()) {
+                    for (ConsumerRecord<String, Message> record : records) {
+                        updateStats(record.value());
+                        //TODO: Store to stable storage in async fashion
+                        if (Long.compare(perRecordsConsumptionMs, 0) != 0) {
+                            Thread.sleep(perRecordsConsumptionMs);
+                        }
                     }
+                    consumer.commitAsync();
                 }
             }
         } catch (WakeupException ex) {

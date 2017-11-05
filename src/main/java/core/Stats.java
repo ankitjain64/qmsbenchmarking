@@ -119,8 +119,10 @@ public class Stats {
     }
 
     public void setOutofOrder(boolean outofOrder) {
-        if (!this.isOutofOrder) {
-            isOutofOrder = outofOrder;
+        synchronized (this) {
+            if (!this.isOutofOrder) {
+                isOutofOrder = outofOrder;
+            }
         }
     }
 
@@ -129,8 +131,10 @@ public class Stats {
     }
 
     public void setGlobalOutOfOrder(boolean globalOutOfOrder) {
-        if (!this.isGlobalOutOfOrder) {
-            isGlobalOutOfOrder = globalOutOfOrder;
+        synchronized (this) {
+            if (!this.isGlobalOutOfOrder) {
+                isGlobalOutOfOrder = globalOutOfOrder;
+            }
         }
     }
 
