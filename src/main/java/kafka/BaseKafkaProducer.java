@@ -26,6 +26,7 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     protected final KafkaProducer<String, Message> producer;
     private final String topic;
     private final int partition;
+    private static KafkaProduceCallBack callback;
 
     BaseKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         super(id, propFileReader, atomicLong);
@@ -33,6 +34,7 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         topic = propFileReader.getStringValue(prefix + PRODUCER_TOPIC);
         partition = propFileReader.getIntegerValue(prefix + PARTIOTION_ID, 1);
+        callback = KafkaProduceCallBack.getInstance(this.stats);
     }
 
     @Override
@@ -47,7 +49,6 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         //need to check order across partitions
         message.setOrderKey(String.valueOf(this.partition));
         ProducerRecord<String, Message> record = new ProducerRecord<>(this.topic, this.partition, message.getpTs(), key, message);
-        KafkaProduceCallBack callback = new KafkaProduceCallBack(this.stats);
         producer.send(record, callback);
     }
 

@@ -2,6 +2,8 @@ package utils;
 
 import com.google.gson.Gson;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Date;
@@ -111,5 +113,14 @@ public class Utils {
     public static String generateHeterogenousText(Random random, int charSize) {
         int size = random.nextInt((MAX_BYTE_SIZE - MIN_BYTE_SIZE) + 1) + MIN_BYTE_SIZE;
         return generateMessageText(size, charSize);
+    }
+
+    public static String getStackTrace(Throwable t) {
+        if (t == null) {
+            return "<no exception info>";
+        }
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 }

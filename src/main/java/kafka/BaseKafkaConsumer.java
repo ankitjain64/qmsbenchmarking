@@ -58,12 +58,11 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
                 if (records != null && !records.isEmpty()) {
                     for (ConsumerRecord<String, Message> record : records) {
                         updateStats(record.value());
-                        //TODO: Store to stable storage in async fashion
                         if (Long.compare(perRecordsConsumptionMs, 0) != 0) {
                             Thread.sleep(perRecordsConsumptionMs);
                         }
                     }
-                    consumer.commitAsync();
+                    consumer.commitSync();
                 }
             }
         } catch (WakeupException ex) {
