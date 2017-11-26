@@ -163,13 +163,14 @@ public class Stats {
         sb.append("Rcv Count").append(",");
         sb.append("Fail Count").append(",");
         sb.append("Ack Count").append(",");
-        sb.append("Total Latency").append("\n");
+        sb.append("Total Latency").append(",");
         sb.append("Out of order").append(",");
         sb.append("Global Out of order").append(",");
+        sb.append("Cummulative Count").append("\n");
         return sb.toString();
     }
 
-    public String getRowValues() {
+    public String getRowValues(Long cummulativeCount) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.startTime).append(",");
         sb.append(this.endTime).append(",");
@@ -179,7 +180,8 @@ public class Stats {
         sb.append(this.ackCount).append(",");
         sb.append(this.totalLatency).append(",");
         sb.append(this.isOutofOrder).append(",");
-        sb.append(this.isGlobalOutOfOrder).append("\n");
+        sb.append(this.isGlobalOutOfOrder).append(",");
+        sb.append(cummulativeCount).append("\n");
         return sb.toString();
     }
 

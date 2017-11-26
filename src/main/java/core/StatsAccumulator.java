@@ -38,7 +38,8 @@ public class StatsAccumulator implements Runnable {
 //            this.lastStatUpdateTime = stats.getEndTime();
 //            accumulatedStats.add(stats);
             try {
-                fileWriter.write(currentOutput.getRowValues());
+                Long cummulativeCount = getCummulative(stats);
+                fileWriter.write(currentOutput.getRowValues(cummulativeCount));
                 fileWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,9 +57,10 @@ public class StatsAccumulator implements Runnable {
         //stop the thread
         if (this.flag) {
             this.flag = false;
+            Stats deltaStats = stats.getDeltaStats(previousStats);
             //handle race condition if any
             try {
-                fileWriter.write(stats.getRowValues());
+                fileWriter.write(deltaStats.getRowValues(getCummulative(stats)));
                 fileWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -71,5 +73,13 @@ public class StatsAccumulator implements Runnable {
             }
 //        accumulatedStats.add(stats);
         }
+    }
+
+    private Long getCummulative(Stats stats) {
+        Long cummulativeCount = stats.getSendCount();
+        if (cummulativeCount == null || cummulativeCount == 0) {
+            cummulativeCount = stats.getRcvCount();
+        }
+        return cummulativeCount;
     }
 }
