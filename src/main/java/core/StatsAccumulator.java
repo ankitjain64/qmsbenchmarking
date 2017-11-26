@@ -11,6 +11,7 @@ public class StatsAccumulator implements Runnable {
     //    private List<Stats> accumulatedStats;
 //    private long lastStatUpdateTime;
     private boolean flag;
+    private Stats previousStats;
 
     StatsAccumulator(QMSNode qmsNode, long statsAccumulationTime, String statsOutputPath) {
         this.qmsNode = qmsNode;
@@ -18,6 +19,7 @@ public class StatsAccumulator implements Runnable {
         this.statsOutputPath = statsOutputPath;
 //        this.accumulatedStats = new ArrayList<>();
         this.flag = true;
+        this.previousStats = null;
         try {
             fileWriter = new FileWriter(this.statsOutputPath);
             fileWriter.write(Stats.getCsvHeaders());
@@ -31,10 +33,12 @@ public class StatsAccumulator implements Runnable {
     public void run() {
         while (flag) {
             Stats stats = qmsNode.getCurrentStatsSnapShot();
+            Stats currentOutput = stats.getDeltaStats(previousStats);
+            previousStats = stats;
 //            this.lastStatUpdateTime = stats.getEndTime();
 //            accumulatedStats.add(stats);
             try {
-                fileWriter.write(stats.getRowValues());
+                fileWriter.write(currentOutput.getRowValues());
                 fileWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();

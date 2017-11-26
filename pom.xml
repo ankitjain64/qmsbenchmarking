@@ -35,6 +35,13 @@
             <version>4.3.0</version>
         </dependency>
 
+        <!--Flume SDK-->
+        <dependency>
+            <groupId>org.apache.flume</groupId>
+            <artifactId>flume-ng-sdk</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+
 
         <!--GSon Dependency for converting to/from json -->
         <dependency>
