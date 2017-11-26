@@ -149,7 +149,7 @@ public class Stats {
         stats.rcvCount = this.rcvCount - previousStats.rcvCount;
         stats.ackCount = this.ackCount - previousStats.rcvCount;
         stats.failedCount = this.failedCount - previousStats.failedCount;
-        stats.totalLatency = this.totalLatency - previousStats.failedCount;
+        stats.totalLatency = this.totalLatency - previousStats.totalLatency;
         stats.isOutofOrder = this.isOutofOrder;
         stats.isGlobalOutOfOrder = this.isGlobalOutOfOrder;
         return stats;
