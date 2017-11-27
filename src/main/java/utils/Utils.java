@@ -71,7 +71,7 @@ public class Utils {
     public static int getCharByteSize() {
         Field[] declaredFields = Character.class.getDeclaredFields();
         for (Field declaredField : declaredFields) {
-            System.out.println(declaredField.getName());
+//            System.out.println(declaredField.getName());
             if (declaredField.getName().equals("SIZE")) {
                 try {
                     int bitsSize = (int) declaredField.get(null);
@@ -122,5 +122,10 @@ public class Utils {
         StringWriter sw = new StringWriter();
         t.printStackTrace(new PrintWriter(sw));
         return sw.toString();
+    }
+
+    public static void main(String[] args) {
+        int charByteSize = Utils.getCharByteSize();
+        System.out.println(charByteSize);
     }
 }

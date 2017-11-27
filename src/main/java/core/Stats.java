@@ -147,7 +147,7 @@ public class Stats {
         stats.endTime = this.endTime;
         stats.sendCount = this.sendCount - previousStats.sendCount;
         stats.rcvCount = this.rcvCount - previousStats.rcvCount;
-        stats.ackCount = this.ackCount - previousStats.rcvCount;
+        stats.ackCount = this.ackCount - previousStats.ackCount;
         stats.failedCount = this.failedCount - previousStats.failedCount;
         stats.totalLatency = this.totalLatency - previousStats.totalLatency;
         stats.isOutofOrder = this.isOutofOrder;
