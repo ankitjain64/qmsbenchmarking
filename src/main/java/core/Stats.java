@@ -114,6 +114,14 @@ public class Stats {
         return rcvCount;
     }
 
+    public Long getFailedCount() {
+        return failedCount;
+    }
+
+    public Long getAckCount() {
+        return ackCount;
+    }
+
     public boolean isOutofOrder() {
         return isOutofOrder;
     }

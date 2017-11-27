@@ -39,6 +39,8 @@ public abstract class BaseProducer implements Producer {
 
     private boolean flag;
 
+    private boolean produce;
+
     public BaseProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         this.id = id;
         this.propFileReader = propFileReader;
@@ -61,6 +63,7 @@ public abstract class BaseProducer implements Producer {
         this.totalMessagesToSend = (propFileReader.getLongValue(prefix + TOTAL_MESSAGE_TO_SEND, 100000L));
         this.atomicLong = atomicLong;
         this.flag = true;
+        this.produce = true;
     }
 
     @Override
@@ -84,14 +87,23 @@ public abstract class BaseProducer implements Producer {
                     }
                 }
             }
-            long messageNumber = atomicLong.getAndIncrement();
-            Message message = new Message(this.id, Utils.getCurrentTime(), messageNumber);
-            doProduce(message);
-            totalMessageSentCount++;
-            updateStats();
+            if (this.produce) {
+                long messageNumber = atomicLong.getAndIncrement();
+                Message message = new Message(this.id, Utils.getCurrentTime(), messageNumber);
+                doProduce(message);
+                totalMessageSentCount++;
+                updateStats();
+            }
+
             if (totalMessageSentCount == totalMessagesToSend) {
-                flag = false;
+                produce = false;
                 //do not stop the accumulator
+            }
+            Long sendCount = stats.getSendCount();
+            Long ackCount = stats.getAckCount();
+            Long failedCount = stats.getFailedCount();
+            if (!produce && Long.compare(sendCount, ackCount + failedCount) == 0) {
+                this.stop();
             }
         }
     }
