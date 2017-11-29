@@ -23,7 +23,8 @@ public class KafkaBrokerStatsAccumulator implements Runnable {
     @Override
     public void run() {
         try {
-            fileWriter = new FileWriter("/home/ubuntu/project/output/kafka");
+            fileWriter = new FileWriter
+                    ("/home/ubuntu/project/output/kafka/broker_metric.txt");
             fileWriter.write(Stats.getCsvHeaders());
         } catch (IOException e) {
             System.out.println("Unable to open file");
