@@ -27,6 +27,8 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     private final String topic;
     private final int partition;
     private static KafkaProduceCallBack callback;
+    private final Thread kafkaBrokerStatsAccumulatorThread;
+    private final KafkaBrokerStatsAccumulator kafkaBrokerStatsAccumulator;
 
     BaseKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         super(id, propFileReader, atomicLong);
@@ -35,12 +37,16 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         topic = propFileReader.getStringValue(prefix + PRODUCER_TOPIC);
         partition = propFileReader.getIntegerValue(prefix + PARTIOTION_ID, 1);
         callback = KafkaProduceCallBack.getInstance(this.stats);
+        kafkaBrokerStatsAccumulator = new KafkaBrokerStatsAccumulator(producer);
+        kafkaBrokerStatsAccumulatorThread = new Thread(kafkaBrokerStatsAccumulator);
+        kafkaBrokerStatsAccumulatorThread.start();
     }
 
     @Override
     public void doStop() {
         producer.flush();
         producer.close();
+        kafkaBrokerStatsAccumulator.stop();
     }
 
     protected void doProduce(Message message) {
