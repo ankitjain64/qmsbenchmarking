@@ -33,8 +33,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(propFileReader.getStringValue(HOST));
         factory.setUsername(propFileReader.getStringValue(USER_NAME));
-        factory.setUsername(propFileReader.getStringValue(PASSWORD));
-        factory.setPassword("guest");
+        factory.setPassword(propFileReader.getStringValue(PASSWORD));
         connection = factory.newConnection();
         channel = connection.createChannel();
         String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);
