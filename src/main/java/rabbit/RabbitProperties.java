@@ -11,6 +11,7 @@ public class RabbitProperties {
     /**
      * Producer Keys
      */
+    public static final String PRODUCER_ACK="producer.ack";
     public static final String EXCHANGE_NAME = "exchange.name";
     public static final String EXCHANGE_TYPE = "exchange.type";
     public static final String EXCHANGE_IS_DURABLE = "exchange.is.durable";

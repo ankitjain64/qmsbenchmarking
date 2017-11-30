@@ -37,6 +37,10 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         connection = factory.newConnection();
         channel = connection.createChannel();
         String prefix = getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
+        boolean shouldAck = propFileReader.getBooleanValue(prefix + PRODUCER_ACK, false);
+        if (shouldAck) {
+            channel.confirmSelect();
+        }
         exchangeName = propFileReader.getStringValue(prefix + EXCHANGE_NAME);
         exchangeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
         routingKey = propFileReader.getStringValue(prefix + ROUTING_KEY);
