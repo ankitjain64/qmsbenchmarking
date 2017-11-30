@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static core.BenchMarkingConstants.CONSUMER_ROLE_TYPE;
+import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static rabbit.RabbitProperties.*;
@@ -36,7 +36,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         factory.setPassword(propFileReader.getStringValue(PASSWORD));
         connection = factory.newConnection();
         channel = connection.createChannel();
-        String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);
+        String prefix = getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         exchangeName = propFileReader.getStringValue(prefix + EXCHANGE_NAME);
         exchangeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
         routingKey = propFileReader.getStringValue(prefix + ROUTING_KEY);
