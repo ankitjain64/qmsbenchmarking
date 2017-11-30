@@ -1,6 +1,7 @@
 package rabbit;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmListener;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import core.BaseProducer;
@@ -41,6 +42,21 @@ public abstract class BaseRabbitProducer extends BaseProducer {
 
         //TODO: experiment with auto delete
         channel.exchangeDeclare(exchangeName, exchangeType, isDurableExchange);
+        addCallBacks();
+    }
+
+    private void addCallBacks() {
+        channel.addConfirmListener(new ConfirmListener() {
+            @Override
+            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                stats.incrementAckCountAndLatency(0L);
+            }
+
+            @Override
+            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                stats.incrementFailCount();
+            }
+        });
     }
 
     @Override
