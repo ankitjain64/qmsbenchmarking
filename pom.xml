@@ -36,24 +36,12 @@
         </dependency>
 
         <!--Flume SDK-->
-        <dependency>
-            <groupId>org.apache.flume</groupId>
-            <artifactId>flume-ng-sdk</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flume</groupId>
-            <artifactId>flume-ng-sinks</artifactId>
-            <version>1.7.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.flume</groupId>
             <artifactId>flume-ng-core</artifactId>
             <version>1.7.0</version>
         </dependency>
-
 
         <!--GSon Dependency for converting to/from json -->
         <dependency>
