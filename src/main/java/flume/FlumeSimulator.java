@@ -8,6 +8,7 @@ import utils.PropFileReader;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.FLUME;
+import static core.BenchMarkingConstants.IS_HOMOGENOUS_MESSAGE_SYSTEM;
 
 /**
  * Created by Maharia
@@ -21,7 +22,11 @@ public class FlumeSimulator extends BaseSimulator {
 
     @Override
     public Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
-        return null;
+        Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
+        if (isHomoGenous) {
+            return new FixedLengthRpcFlumeProducer(id, propFileReader, atomicLong);
+        }
+        return new HeterogenousRpcFlumeProducer(id, propFileReader, atomicLong);
     }
 
     @Override
