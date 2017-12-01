@@ -24,9 +24,15 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
 
     public BaseRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         super(id, propFileReader, atomicLong);
-        String hostname = propFileReader.getStringValue(FLUME_HOST);//space
-        // seperated host:port
         connectProps = new Properties();
+        String hostname = propFileReader.getStringValue(FLUME_HOSTS_NAME);//space
+        String[] split = hostname.split("\\s+");
+        for (String s : split) {
+            String hostPropKey = RpcClientConfigurationConstants.CONFIG_HOSTS_PREFIX + s;
+            connectProps.setProperty(hostPropKey, propFileReader.getStringValue(hostPropKey));
+        }
+
+        // seperated host:port
         String clientType = extractClientType(connectProps.getProperty(PRODUCER_TYPE, DEFAULT));
         connectProps.setProperty(RpcClientConfigurationConstants
                 .CONFIG_CLIENT_TYPE, clientType);
