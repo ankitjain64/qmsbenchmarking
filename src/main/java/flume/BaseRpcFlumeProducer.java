@@ -59,6 +59,7 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
             // clean up and recreate the client
             client.close();
             client = null;
+            e.printStackTrace();
             System.out.println("FAILURE!!!!!!!!!!!!!!!");
             client = RpcClientFactory.getInstance(connectProps);
         }
