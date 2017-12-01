@@ -9,8 +9,6 @@ import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
 import utils.Utils;
 
-import static core.BenchMarkingConstants.STATS_ACCUMULATION_INTERVAL;
-import static core.BenchMarkingConstants.STATS_OUTPUT_PATH;
 import static utils.Utils.getCurrentTime;
 
 public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNode {
@@ -71,11 +69,11 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
 
     @Override
     public void configure(Context context) {
-        String statsOutputPath = context.getString(STATS_OUTPUT_PATH);
+        String statsOutputPath = context.getString("stats_output_path");
         if (statsOutputPath == null || statsOutputPath.length() == 0) {
             throw new IllegalArgumentException("No stats output path provided");
         }
-        long statsAccumulationTime = context.getLong(STATS_ACCUMULATION_INTERVAL, 0L);
+        long statsAccumulationTime = context.getLong("stats_accumulation_interval", 0L);
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("No stats accumulation interval " +
                     "provided");
