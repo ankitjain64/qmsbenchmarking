@@ -9,6 +9,8 @@ import org.apache.flume.event.EventBuilder;
 import utils.PropFileReader;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,7 +21,9 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
     public static final String DEFAULT = "default";
     public static final String LOAD_BALANCE = "load.balance";
     private final Properties connectProps;
+    private final int batchSize;
     private RpcClient client;
+    private List<Event> eventList;
 
 
     public BaseRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
@@ -36,16 +40,28 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
         String clientType = extractClientType(connectProps.getProperty(PRODUCER_TYPE, DEFAULT));
         connectProps.setProperty(RpcClientConfigurationConstants
                 .CONFIG_CLIENT_TYPE, clientType);
+        String batchSizeStr = propFileReader.getStringValue(BATCH_SIZE,
+                "100");
+        batchSize = Integer.parseInt(batchSizeStr);
         connectProps.setProperty(RpcClientConfigurationConstants
-                .CONFIG_BATCH_SIZE, propFileReader.getStringValue(BATCH_SIZE,
-                "100"));
+                .CONFIG_BATCH_SIZE, batchSizeStr);
         connectProps.setProperty(RpcClientConfigurationConstants.CONFIG_HOSTS,
                 hostname);
         this.client = RpcClientFactory.getInstance(connectProps);
+        eventList = new ArrayList<>();
     }
 
     @Override
     protected void doStop() {
+        if (eventList.size() != 0) {
+            sendBatch();
+        }
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            System.out.println("Interupt while thread sleep");
+            e.printStackTrace();
+        }
         client.close();
     }
 
@@ -53,8 +69,16 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
     protected void doProduce(Message message) {
         message.setText(getText());
         Event event = EventBuilder.withBody(toJson(message), Charset.forName("UTF-8"));
+        eventList.add(event);
+        if (eventList.size() == batchSize) {
+            sendBatch();
+        }
+    }
+
+    private void sendBatch() {
         try {
-            client.append(event);
+            client.appendBatch(eventList);
+            eventList = new ArrayList<>();
         } catch (EventDeliveryException e) {
             // clean up and recreate the client
             client.close();
