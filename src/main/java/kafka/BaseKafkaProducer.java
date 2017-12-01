@@ -39,7 +39,7 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         callback = KafkaProduceCallBack.getInstance(this.stats);
         kafkaBrokerStatsAccumulator = new KafkaBrokerStatsAccumulator(producer);
         kafkaBrokerStatsAccumulatorThread = new Thread(kafkaBrokerStatsAccumulator);
-        kafkaBrokerStatsAccumulatorThread.start();
+//        kafkaBrokerStatsAccumulatorThread.start();
     }
 
     @Override
