@@ -55,11 +55,18 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
         transaction.begin();
         try {
             Event event = channel.take();
-            Message message = Utils.fromJson(event.getBody(), Message.class);
-            message.setcTs(Utils.getCurrentTime());
-            stats.incrementRcvCountAndLatency(message.getDelta());
-            transaction.commit();
-            rv = Status.READY;
+            if (event != null) {
+                System.out.println("Event non null");
+                Message message = Utils.fromJson(event.getBody(), Message.class);
+                System.out.println(message);
+                message.setcTs(Utils.getCurrentTime());
+                stats.incrementRcvCountAndLatency(message.getDelta());
+                transaction.commit();
+                rv = Status.READY;
+            } else {
+                System.out.println("Event Null");
+                rv = Status.BACKOFF;
+            }
         } catch (Throwable th) {
             transaction.rollback();
             rv = Status.BACKOFF;
