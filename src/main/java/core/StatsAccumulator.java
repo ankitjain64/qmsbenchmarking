@@ -7,19 +7,24 @@ public class StatsAccumulator implements Runnable {
     private FileWriter fileWriter;
     private QMSNode qmsNode;
     private final Long statsAccumulationTime;
-    private String statsOutputPath;
+    private final String statsOutputPath;
     //    private List<Stats> accumulatedStats;
 //    private long lastStatUpdateTime;
     private boolean flag;
     private Stats previousStats;
 
-    StatsAccumulator(QMSNode qmsNode, long statsAccumulationTime, String statsOutputPath) {
+    public StatsAccumulator(QMSNode qmsNode, long statsAccumulationTime,
+                            String statsOutputPath) {
         this.qmsNode = qmsNode;
         this.statsAccumulationTime = statsAccumulationTime;
         this.statsOutputPath = statsOutputPath;
 //        this.accumulatedStats = new ArrayList<>();
         this.flag = true;
         this.previousStats = null;
+        init();
+    }
+
+    private void init() {
         try {
             fileWriter = new FileWriter(this.statsOutputPath);
             fileWriter.write(Stats.getCsvHeaders());
@@ -53,7 +58,7 @@ public class StatsAccumulator implements Runnable {
         }
     }
 
-    void stop(Stats stats) {
+    public void stop(Stats stats) {
         //stop the thread
         if (this.flag) {
             this.flag = false;

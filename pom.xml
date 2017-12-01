@@ -29,12 +29,6 @@
             <version>0.11.0.1</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.rabbitmq</groupId>-->
-            <!--<artifactId>amqp-client</artifactId>-->
-            <!--<version>4.3.0</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
@@ -45,6 +39,18 @@
         <dependency>
             <groupId>org.apache.flume</groupId>
             <artifactId>flume-ng-sdk</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flume</groupId>
+            <artifactId>flume-ng-sinks</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flume</groupId>
+            <artifactId>flume-ng-core</artifactId>
             <version>1.7.0</version>
         </dependency>
 

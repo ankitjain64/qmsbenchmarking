@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static core.BenchMarkingConstants.MESSAGE_SIZE;
 import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 
-public class FixedLengthFlumeProducer extends BaseFlumeProducer {
+public class FixedLengthRpcFlumeProducer extends BaseRpcFlumeProducer {
 
     private static int charSize;
     private String message;
@@ -17,7 +17,7 @@ public class FixedLengthFlumeProducer extends BaseFlumeProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    public FixedLengthFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+    public FixedLengthRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         super(id, propFileReader, atomicLong);
         String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         int messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);

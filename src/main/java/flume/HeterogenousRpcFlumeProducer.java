@@ -6,7 +6,7 @@ import utils.Utils;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class HeterogenousFlumeProducer extends BaseFlumeProducer {
+public class HeterogenousRpcFlumeProducer extends BaseRpcFlumeProducer {
     private Random random;
     private static int charSize;
 
@@ -14,7 +14,7 @@ public class HeterogenousFlumeProducer extends BaseFlumeProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    public HeterogenousFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+    public HeterogenousRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         super(id, propFileReader, atomicLong);
         this.random = new Random(0);
     }
