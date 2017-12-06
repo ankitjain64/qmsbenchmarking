@@ -125,7 +125,6 @@ public class Utils {
     }
 
     public static void main(String[] args) {
-        int charByteSize = Utils.getCharByteSize();
-        System.out.println(charByteSize);
+        System.out.println( String.valueOf((1024l * 1024l * 1024l) / 1));
     }
 }
