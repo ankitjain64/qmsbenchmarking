@@ -1,6 +1,7 @@
 package kafka;
 
 import core.BaseConsumer;
+import core.BenchMarkingConstants;
 import core.Consumer;
 import core.Message;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -88,6 +89,8 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
         properties.setProperty(HEARTBEAT_INTERVAL_MS, propFileReader.getStringValue(prefix + HEARTBEAT_INTERVAL_MS, "3000"));
         Boolean autCommit = propFileReader.getBooleanValue(prefix + ENABLE_AUTO_COMMIT, true);
         properties.setProperty(ENABLE_AUTO_COMMIT, autCommit.toString());
+        Integer integerValue = propFileReader.getIntegerValue(BenchMarkingConstants.NODE_COUNT);
+        properties.setProperty("fetch.max.bytes", String.valueOf((1024l * 1024l * 1024l) / integerValue));
         if (autCommit) {
             properties.setProperty(AUTO_COMMIT_INTERVAL, propFileReader.getStringValue(prefix + AUTO_COMMIT_INTERVAL, "5000"));
         }
