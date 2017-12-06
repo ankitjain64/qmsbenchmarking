@@ -147,20 +147,22 @@ public class Stats {
     }
 
     public Stats getDeltaStats(Stats previousStats) {
-        if (previousStats == null) {
-            return this;
+        synchronized (this) {
+            if (previousStats == null) {
+                return this;
+            }
+            Stats stats = new Stats(previousStats.endTime);
+            stats.totalLatency = this.totalLatency - previousStats.totalLatency;
+            stats.endTime = this.endTime;
+            stats.sendCount = this.sendCount - previousStats.sendCount;
+            stats.rcvCount = this.rcvCount - previousStats.rcvCount;
+            stats.ackCount = this.ackCount - previousStats.ackCount;
+            stats.failedCount = this.failedCount - previousStats.failedCount;
+            stats.totalLatency = this.totalLatency - previousStats.totalLatency;
+            stats.isOutofOrder = this.isOutofOrder;
+            stats.isGlobalOutOfOrder = this.isGlobalOutOfOrder;
+            return stats;
         }
-        Stats stats = new Stats(previousStats.endTime);
-        stats.totalLatency = this.totalLatency - previousStats.totalLatency;
-        stats.endTime = this.endTime;
-        stats.sendCount = this.sendCount - previousStats.sendCount;
-        stats.rcvCount = this.rcvCount - previousStats.rcvCount;
-        stats.ackCount = this.ackCount - previousStats.ackCount;
-        stats.failedCount = this.failedCount - previousStats.failedCount;
-        stats.totalLatency = this.totalLatency - previousStats.totalLatency;
-        stats.isOutofOrder = this.isOutofOrder;
-        stats.isGlobalOutOfOrder = this.isGlobalOutOfOrder;
-        return stats;
     }
 
     public static String getCsvHeaders() {
