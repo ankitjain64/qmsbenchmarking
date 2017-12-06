@@ -88,10 +88,10 @@ public class BaseKafkaConsumer extends BaseConsumer implements Consumer {
         properties.setProperty(HEARTBEAT_INTERVAL_MS, propFileReader.getStringValue(prefix + HEARTBEAT_INTERVAL_MS, "3000"));
         Boolean autCommit = propFileReader.getBooleanValue(prefix + ENABLE_AUTO_COMMIT, true);
         properties.setProperty(ENABLE_AUTO_COMMIT, autCommit.toString());
-        properties.setProperty("fetch.max.bytes", propFileReader
-                .getStringValue(prefix + "fetch.max.bytes"));
-        properties.setProperty("max.partition.fetch.bytes", propFileReader
-                .getStringValue(prefix + "max.partition.fetch.bytes"));
+//        properties.setProperty("fetch.max.bytes", propFileReader
+//                .getStringValue(prefix + "fetch.max.bytes"));
+//        properties.setProperty("max.partition.fetch.bytes", propFileReader
+//                .getStringValue(prefix + "max.partition.fetch.bytes"));
         if (autCommit) {
             properties.setProperty(AUTO_COMMIT_INTERVAL, propFileReader.getStringValue(prefix + AUTO_COMMIT_INTERVAL, "5000"));
         }
