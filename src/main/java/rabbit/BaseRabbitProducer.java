@@ -57,12 +57,15 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             @Override
             public void handleAck(long deliveryTag, boolean multiple) throws IOException {
                 synchronized (this) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(lastAckDeliveryTag).append(",")
+                            .append(deliveryTag).append(multiple);
                     long delta = deliveryTag;
                     if (lastAckDeliveryTag != null) {
                         delta = delta - lastAckDeliveryTag;
                         lastAckDeliveryTag = deliveryTag;
                     }
-                    System.out.printf("yolo");
+                    System.out.println(sb);
                     stats.incrementAckCountBy(delta);
                 }
             }
