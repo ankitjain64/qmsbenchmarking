@@ -1,6 +1,7 @@
 package rabbit;
 
 import com.rabbitmq.client.*;
+import com.rabbitmq.client.impl.StandardMetricsCollector;
 import core.BaseConsumer;
 import core.Message;
 import utils.PropFileReader;
@@ -27,10 +28,12 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
 
     RabbitConsumer(int id, PropFileReader propFileReader) throws IOException, TimeoutException {
         super(id, propFileReader);
+        StandardMetricsCollector metrics = new StandardMetricsCollector();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(propFileReader.getStringValue(HOST));
         factory.setUsername(propFileReader.getStringValue(USER_NAME));
         factory.setPassword(propFileReader.getStringValue(PASSWORD));
+        factory.setMetricsCollector(metrics);
         connection = factory.newConnection();
         channel = connection.createChannel();
         String prefix = getNodeIdPrefix(CONSUMER_ROLE_TYPE, this.id);
@@ -102,7 +105,7 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
     }
 
     @Override
-    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+    public synchronized void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         Message message = Utils.fromJson(body, Message.class);
         message.setcTs(Utils.getCurrentTime());
         updateStats(message);
@@ -113,7 +116,6 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
                 e.printStackTrace();
             }
         }
-        //TODO: Play with this flag
         channel.basicAck(envelope.getDeliveryTag(), false);
     }
 }
