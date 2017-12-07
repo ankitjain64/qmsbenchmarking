@@ -85,22 +85,10 @@ public class Stats {
         }
     }
 
-    public void incrementFailCountBy(long delta) {
-        synchronized (this) {
-            this.failedCount += delta;
-        }
-    }
-
     public void incrementAckCountAndLatency(long delta) {
         synchronized (this) {
             this.ackCount++;
             this.totalLatency += delta;
-        }
-    }
-
-    public void incrementAckCountBy(long delta) {
-        synchronized (this) {
-            this.ackCount += delta;
         }
     }
 

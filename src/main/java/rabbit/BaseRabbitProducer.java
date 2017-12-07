@@ -1,12 +1,11 @@
 package rabbit;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmListener;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.impl.StandardMetricsCollector;
 import core.BaseProducer;
 import core.Message;
-import core.Stats;
 import utils.PropFileReader;
 
 import java.io.IOException;
@@ -17,7 +16,8 @@ import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static rabbit.RabbitProperties.*;
-import static utils.Utils.*;
+import static utils.Utils.getNodeIdPrefix;
+import static utils.Utils.toJson;
 
 public abstract class BaseRabbitProducer extends BaseProducer {
 
@@ -27,13 +27,10 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final String exchangeType;
     private final Boolean isDurableExchange;
     private final String routingKey;
-    private final StandardMetricsCollector metrics;
 
     BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
         super(id, propFileReader, atomicLong);
-        metrics = new StandardMetricsCollector();
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setMetricsCollector(metrics);
         factory.setHost(propFileReader.getStringValue(HOST));
         factory.setUsername(propFileReader.getStringValue(USER_NAME));
         factory.setPassword(propFileReader.getStringValue(PASSWORD));
@@ -51,15 +48,21 @@ public abstract class BaseRabbitProducer extends BaseProducer {
 
         //TODO: experiment with auto delete
         channel.exchangeDeclare(exchangeName, exchangeType, isDurableExchange);
+        addCallBacks();
     }
 
-    @Override
-    public Stats getCurrentStatsSnapShot() {
-        synchronized (this) {
-            this.stats.incrementAckCountBy(metrics.getAcknowledgedMessages().getCount());
-            this.stats.incrementFailCount();
-            return this.stats.createSnapShot(getCurrentTime());
-        }
+    private void addCallBacks() {
+        channel.addConfirmListener(new ConfirmListener() {
+            @Override
+            public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                stats.incrementAckCountAndLatency(0L);
+            }
+
+            @Override
+            public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                stats.incrementFailCount();
+            }
+        });
     }
 
     @Override
