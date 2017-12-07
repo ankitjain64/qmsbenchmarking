@@ -10,6 +10,9 @@ import org.apache.flume.sink.AbstractSink;
 import utils.PropFileReader;
 import utils.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static core.BenchMarkingConstants.STATS_ACCUMULATION_INTERVAL;
 import static core.BenchMarkingConstants.STATS_OUTPUT_PATH;
 import static utils.Utils.getCurrentTime;
@@ -18,6 +21,8 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
 
     private StatsAccumulator statsAccumulator;
     private Stats stats = new Stats(getCurrentTime());
+    private Map<Integer, Map<String, Message>> producerIdVsOrderKeyVsMessage;
+    private Message lastMessage;
 
     @Override
     public int getId() {
@@ -58,7 +63,25 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
             if (event != null) {
                 Message message = Utils.fromJson(event.getBody(), Message.class);
                 message.setcTs(Utils.getCurrentTime());
+                Map<String, Message> orderKeyVsMessage = producerIdVsOrderKeyVsMessage.get(message.getpId());
+                boolean isOutOfOrder = false;
+                if (orderKeyVsMessage == null) {
+                    orderKeyVsMessage = new HashMap<>();
+                    producerIdVsOrderKeyVsMessage.put(message.getpId(), orderKeyVsMessage);
+                }
+                Message existing = orderKeyVsMessage.get(message.getOrderKey());
+                if (existing != null) {
+                    isOutOfOrder = Long.compare(message.getNum(), existing.getNum()) < 0;
+                }
+                boolean isGlobalOutOfOrder = false;
+                if (lastMessage != null) {
+                    isGlobalOutOfOrder = Long.compare(message.getNum(), lastMessage.getNum()) < 0;
+                }
+                lastMessage = message;
+                orderKeyVsMessage.put(message.getOrderKey(), message);
                 stats.incrementRcvCountAndLatency(message.getDelta());
+                stats.setOutofOrder(isOutOfOrder);
+                stats.setGlobalOutOfOrder(isGlobalOutOfOrder);
                 rv = Status.READY;
             } else {
                 rv = Status.BACKOFF;

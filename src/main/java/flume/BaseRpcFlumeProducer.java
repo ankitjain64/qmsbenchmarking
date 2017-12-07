@@ -78,6 +78,7 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
     private void sendBatch() {
         try {
             client.appendBatch(eventList);
+            this.stats.incrementAckCountBy(eventList.size());
             eventList = new ArrayList<>();
         } catch (EventDeliveryException e) {
             // clean up and recreate the client
