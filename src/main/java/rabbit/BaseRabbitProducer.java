@@ -55,6 +55,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         channel.addConfirmListener(new ConfirmListener() {
             @Override
             public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+                System.out.println(deliveryTag);
                 stats.incrementAckCountAndLatency(0L);
             }
 
