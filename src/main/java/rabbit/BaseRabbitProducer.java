@@ -27,6 +27,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final String exchangeType;
     private final Boolean isDurableExchange;
     private final String routingKey;
+    private Long lastAckDeliveryTag = null;
 
     BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
         super(id, propFileReader, atomicLong);
@@ -55,12 +56,19 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         channel.addConfirmListener(new ConfirmListener() {
             @Override
             public void handleAck(long deliveryTag, boolean multiple) throws IOException {
-                System.out.println(deliveryTag);
-                stats.incrementAckCountAndLatency(0L);
+                synchronized (this) {
+                    long delta = deliveryTag;
+                    if (lastAckDeliveryTag != null) {
+                        delta = delta - lastAckDeliveryTag;
+                        lastAckDeliveryTag = deliveryTag;
+                    }
+                    stats.incrementAckCountBy(delta);
+                }
             }
 
             @Override
             public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+                //TODO: Fix this to handle multiple
                 stats.incrementFailCount();
             }
         });

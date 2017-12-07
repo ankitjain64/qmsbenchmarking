@@ -38,7 +38,7 @@ public abstract class BaseConsumer implements Consumer {
         new Thread(statsAccumulator).start();
     }
 
-    protected void updateStats(Message message) {
+    protected synchronized void updateStats(Message message) {
         synchronized (this.stats) {
             //System.out.println("Updating stats");
             Map<String, Message> orderKeyVsMessage = producerIdVsOrderKeyVsMessage.get(message.getpId());

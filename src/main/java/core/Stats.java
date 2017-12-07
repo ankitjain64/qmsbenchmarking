@@ -92,6 +92,12 @@ public class Stats {
         }
     }
 
+    public void incrementAckCountBy(long delta) {
+        synchronized (this) {
+            this.ackCount += delta;
+        }
+    }
+
     public void setEndTime(Long endTime) {
         synchronized (this) {
             this.endTime = endTime;
