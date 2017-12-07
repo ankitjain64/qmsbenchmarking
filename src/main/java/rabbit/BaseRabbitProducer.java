@@ -62,6 +62,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
                         delta = delta - lastAckDeliveryTag;
                         lastAckDeliveryTag = deliveryTag;
                     }
+                    System.out.printf("yolo");
                     stats.incrementAckCountBy(delta);
                 }
             }
