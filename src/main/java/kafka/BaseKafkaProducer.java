@@ -13,8 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static core.BenchMarkingConstants.PRODUCER_ROLE_TYPE;
 import static kafka.KafkaProperties.*;
-import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
 //http://cloudurable.com/blog/kafka-tutorial-kafka-producer-advanced-java-examples/index.html
 
@@ -70,6 +69,10 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         properties.setProperty(BATCH_SIZE, propFileReader.getStringValue(prefix + BATCH_SIZE, "16384"));
         properties.setProperty(COMPRESSION_TYPE, propFileReader.getStringValue(prefix + COMPRESSION_TYPE, "none"));
         properties.setProperty(REQUEST_TIMEOUT_MS, propFileReader.getStringValue(prefix + REQUEST_TIMEOUT_MS, "30000"));
+        properties.setProperty(BUFFER_MEMORY_CONFIG, propFileReader.getStringValue(prefix +
+                BUFFER_MEMORY_CONFIG, String.valueOf(32 * 1024 * 1024L)));
+        properties.setProperty(MAX_REQUEST_SIZE_CONFIG, propFileReader
+                .getStringValue(prefix + MAX_REQUEST_SIZE_CONFIG, String.valueOf(1 * 1024 * 1024L)));
         return properties;
     }
 

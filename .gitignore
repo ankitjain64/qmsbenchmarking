@@ -1,3 +1,10 @@
 .idea
 target
 qmsbenchmarking.iml
+id
+id.pub
+.DS_Store
+artifacts/.DS_Store
+patch/
+src/config/rabbit-2/
+src/test/

@@ -1,9 +1,6 @@
 package rabbit;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConfirmListener;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import core.BaseProducer;
 import core.Message;
 import utils.PropFileReader;
@@ -97,7 +94,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         message.setText(getMessageText());
         message.setOrderKey(valueOf(channel.getChannelNumber()));
         try {
-            channel.basicPublish(this.exchangeName, this.routingKey, null, toJson(message).getBytes(UTF_8));
+            channel.basicPublish(this.exchangeName, this.routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, toJson(message).getBytes(UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
