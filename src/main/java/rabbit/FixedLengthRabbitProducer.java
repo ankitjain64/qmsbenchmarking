@@ -1,5 +1,6 @@
 package rabbit;
 
+import core.Stats;
 import utils.PropFileReader;
 import utils.Utils;
 
@@ -20,8 +21,8 @@ public class FixedLengthRabbitProducer extends BaseRabbitProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    FixedLengthRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
-        super(id, propFileReader, atomicLong);
+    FixedLengthRabbitProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, stats, propFileReader, atomicLong);
         String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         this.messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
         message = Utils.generateMessageText(messageSize, charSize);

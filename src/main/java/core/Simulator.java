@@ -9,4 +9,6 @@ public interface Simulator {
     String getQMSType();
 
     void simulate(PropFileReader propFileReader);
+
+    Stats getCurrentStatsSnapShot();
 }

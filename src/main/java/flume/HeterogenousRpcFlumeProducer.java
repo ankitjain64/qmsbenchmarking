@@ -1,5 +1,6 @@
 package flume;
 
+import core.Stats;
 import utils.PropFileReader;
 import utils.Utils;
 
@@ -14,8 +15,8 @@ public class HeterogenousRpcFlumeProducer extends BaseRpcFlumeProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    public HeterogenousRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, propFileReader, atomicLong);
+    public HeterogenousRpcFlumeProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, stats, propFileReader, atomicLong);
         this.random = new Random(0);
     }
 

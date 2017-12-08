@@ -2,6 +2,7 @@ package kafka;
 
 import core.BaseProducer;
 import core.Message;
+import core.Stats;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -26,26 +27,20 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     private final String topic;
     private final int partition;
     private static KafkaProduceCallBack callback;
-    private final Thread kafkaBrokerStatsAccumulatorThread;
-    private final KafkaBrokerStatsAccumulator kafkaBrokerStatsAccumulator;
 
-    BaseKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, propFileReader, atomicLong);
+    BaseKafkaProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, stats, propFileReader, atomicLong);
         producer = new KafkaProducer<>(extractBaseKafkaProducerProperties(propFileReader));
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         topic = propFileReader.getStringValue(prefix + PRODUCER_TOPIC);
         partition = propFileReader.getIntegerValue(prefix + PARTIOTION_ID, 1);
         callback = KafkaProduceCallBack.getInstance(this.stats);
-        kafkaBrokerStatsAccumulator = new KafkaBrokerStatsAccumulator(producer);
-        kafkaBrokerStatsAccumulatorThread = new Thread(kafkaBrokerStatsAccumulator);
-//        kafkaBrokerStatsAccumulatorThread.start();
     }
 
     @Override
     public void doStop() {
         producer.flush();
         producer.close();
-        kafkaBrokerStatsAccumulator.stop();
     }
 
     protected void doProduce(Message message) {
@@ -62,17 +57,14 @@ public abstract class BaseKafkaProducer extends BaseProducer {
         properties.setProperty(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(VALUE_SERIALIZER_CLASS_CONFIG, KafkaMessageSerializer.class.getName());
         properties.setProperty(BOOTSTRAP_SERVERS, propFileReader.getStringValue(BOOTSTRAP_SERVERS));
-        String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
-        properties.setProperty(CLIENT_ID, propFileReader.getStringValue(prefix + CLIENT_ID, String.valueOf(this.id)));
-        properties.setProperty(ACKS, propFileReader.getStringValue(prefix + ACKS, "1"));
-        properties.setProperty(LINGER_MS, propFileReader.getStringValue(prefix + LINGER_MS, "0"));
-        properties.setProperty(BATCH_SIZE, propFileReader.getStringValue(prefix + BATCH_SIZE, "16384"));
-        properties.setProperty(COMPRESSION_TYPE, propFileReader.getStringValue(prefix + COMPRESSION_TYPE, "none"));
-        properties.setProperty(REQUEST_TIMEOUT_MS, propFileReader.getStringValue(prefix + REQUEST_TIMEOUT_MS, "30000"));
-        properties.setProperty(BUFFER_MEMORY_CONFIG, propFileReader.getStringValue(prefix +
-                BUFFER_MEMORY_CONFIG, String.valueOf(32 * 1024 * 1024L)));
-        properties.setProperty(MAX_REQUEST_SIZE_CONFIG, propFileReader
-                .getStringValue(prefix + MAX_REQUEST_SIZE_CONFIG, String.valueOf(1 * 1024 * 1024L)));
+        properties.setProperty(CLIENT_ID, String.valueOf(this.id));
+        properties.setProperty(ACKS, propFileReader.getStringValue(ACKS, "1"));
+        properties.setProperty(LINGER_MS, propFileReader.getStringValue(LINGER_MS, "0"));
+        properties.setProperty(BATCH_SIZE, propFileReader.getStringValue(BATCH_SIZE, "16384"));
+        properties.setProperty(COMPRESSION_TYPE, propFileReader.getStringValue(COMPRESSION_TYPE, "none"));
+        properties.setProperty(REQUEST_TIMEOUT_MS, propFileReader.getStringValue(REQUEST_TIMEOUT_MS, "30000"));
+        properties.setProperty(BUFFER_MEMORY_CONFIG, propFileReader.getStringValue(BUFFER_MEMORY_CONFIG, String.valueOf(32 * 1024 * 1024L)));
+        properties.setProperty(MAX_REQUEST_SIZE_CONFIG, propFileReader.getStringValue(MAX_REQUEST_SIZE_CONFIG, String.valueOf(1 * 1024 * 1024L)));
         return properties;
     }
 

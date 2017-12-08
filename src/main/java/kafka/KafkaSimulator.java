@@ -1,9 +1,6 @@
 package kafka;
 
-import core.BaseSimulator;
-import core.BenchMarkingConstants;
-import core.Consumer;
-import core.Producer;
+import core.*;
 import utils.PropFileReader;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -21,13 +18,15 @@ public class KafkaSimulator extends BaseSimulator {
     }
 
     @Override
-    public Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+    public Producer createProducerThread(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
         //TODO: Fix me and change config
         Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
         if (isHomoGenous) {
-            return new FixedLengthMsgBaseKafkaProducer(id,propFileReader, atomicLong);
+            return new FixedLengthMsgBaseKafkaProducer(id, stats, propFileReader,
+                    atomicLong);
         }
-        return new HeterogenousKafkaProducer(id,propFileReader,atomicLong);
+        return new HeterogenousKafkaProducer(id, stats,propFileReader,
+                atomicLong);
     }
 
     @Override

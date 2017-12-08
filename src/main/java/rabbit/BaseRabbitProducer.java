@@ -1,8 +1,10 @@
 package rabbit;
 
+import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import core.BaseProducer;
 import core.Message;
+import core.Stats;
 import utils.PropFileReader;
 
 import java.io.IOException;
@@ -25,9 +27,10 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final Boolean isDurableExchange;
     private final String routingKey;
     private Long lastAckDeliveryTag = null;
+    private final boolean isPersistent;
 
-    BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
-        super(id, propFileReader, atomicLong);
+    BaseRabbitProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, stats, propFileReader, atomicLong);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(propFileReader.getStringValue(HOST));
         factory.setUsername(propFileReader.getStringValue(USER_NAME));
@@ -35,10 +38,12 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         connection = factory.newConnection();
         channel = connection.createChannel();
         String prefix = getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
-        boolean shouldAck = propFileReader.getBooleanValue(prefix + PRODUCER_ACK, false);
+        boolean shouldAck = propFileReader.getBooleanValue(PRODUCER_ACK, false);
         if (shouldAck) {
             channel.confirmSelect();
         }
+        isPersistent = propFileReader.getBooleanValue("persistent", false);
+
         exchangeName = propFileReader.getStringValue(prefix + EXCHANGE_NAME);
         exchangeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
         routingKey = propFileReader.getStringValue(prefix + ROUTING_KEY);
@@ -54,15 +59,11 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             @Override
             public void handleAck(long deliveryTag, boolean multiple) throws IOException {
                 synchronized (this) {
-//                    StringBuilder sb = new StringBuilder();
-//                    sb.append(lastAckDeliveryTag).append(",")
-//                            .append(deliveryTag).append(multiple);
                     long delta = deliveryTag;
                     if (lastAckDeliveryTag != null) {
                         delta = delta - lastAckDeliveryTag;
                     }
                     lastAckDeliveryTag = deliveryTag;
-//                    System.out.println(sb);
                     stats.incrementAckCountBy(delta);
                 }
             }
@@ -94,7 +95,13 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         message.setText(getMessageText());
         message.setOrderKey(valueOf(channel.getChannelNumber()));
         try {
-            channel.basicPublish(this.exchangeName, this.routingKey, MessageProperties.PERSISTENT_TEXT_PLAIN, toJson(message).getBytes(UTF_8));
+            BasicProperties basicProperties;
+            if (isPersistent) {
+                basicProperties = MessageProperties.PERSISTENT_TEXT_PLAIN;
+            } else {
+                basicProperties = MessageProperties.BASIC;
+            }
+            channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }

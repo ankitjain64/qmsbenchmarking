@@ -1,5 +1,6 @@
 package rabbit;
 
+import core.Stats;
 import utils.PropFileReader;
 import utils.Utils;
 
@@ -17,8 +18,8 @@ public class HeterogenousRabbitProducer extends BaseRabbitProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    HeterogenousRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
-        super(id, propFileReader,atomicLong);
+    HeterogenousRabbitProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, stats, propFileReader, atomicLong);
         random = new Random(0);
     }
 

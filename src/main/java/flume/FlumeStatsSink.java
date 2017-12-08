@@ -1,7 +1,7 @@
 package flume;
 
 import core.Message;
-import core.QMSNode;
+import core.Simulator;
 import core.Stats;
 import core.StatsAccumulator;
 import org.apache.flume.*;
@@ -14,22 +14,11 @@ import static core.BenchMarkingConstants.STATS_ACCUMULATION_INTERVAL;
 import static core.BenchMarkingConstants.STATS_OUTPUT_PATH;
 import static utils.Utils.getCurrentTime;
 
-public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNode {
+public class FlumeStatsSink extends AbstractSink implements Configurable, Simulator {
 
     private StatsAccumulator statsAccumulator;
     private Stats stats = new Stats(getCurrentTime());
     private Message lastMessage;
-
-    @Override
-    public int getId() {
-        //no-op
-        return 0;
-    }
-
-    @Override
-    public void run() {
-        //no-op
-    }
 
     @Override
     public synchronized void start() {
@@ -43,10 +32,6 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
         statsAccumulator.stop(stats);
     }
 
-    @Override
-    public Stats getCurrentStatsSnapShot() {
-        return this.stats.createSnapShot(getCurrentTime());
-    }
 
     @Override
     public Status process() throws EventDeliveryException {
@@ -94,5 +79,20 @@ public class FlumeStatsSink extends AbstractSink implements Configurable, QMSNod
                     "provided");
         }
         statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
+    }
+
+    @Override
+    public String getQMSType() {
+        return null;
+    }
+
+    @Override
+    public void simulate(PropFileReader propFileReader) {
+
+    }
+
+    @Override
+    public Stats getCurrentStatsSnapShot() {
+        return this.stats.createSnapShot(Utils.getCurrentTime());
     }
 }

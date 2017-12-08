@@ -1,5 +1,6 @@
 package kafka;
 
+import core.Stats;
 import utils.PropFileReader;
 import utils.Utils;
 
@@ -18,8 +19,8 @@ public class HeterogenousKafkaProducer extends BaseKafkaProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    HeterogenousKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, propFileReader, atomicLong);
+    HeterogenousKafkaProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, stats, propFileReader, atomicLong);
         this.random = new Random(0);
     }
 

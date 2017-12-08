@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class StatsAccumulator implements Runnable {
     private FileWriter fileWriter;
-    private QMSNode qmsNode;
+    private Simulator simulator;
     private final Long statsAccumulationTime;
     private final String statsOutputPath;
     //    private List<Stats> accumulatedStats;
@@ -13,9 +13,9 @@ public class StatsAccumulator implements Runnable {
     private boolean flag;
     private Stats previousStats;
 
-    public StatsAccumulator(QMSNode qmsNode, long statsAccumulationTime,
+    public StatsAccumulator(Simulator simulator, long statsAccumulationTime,
                             String statsOutputPath) {
-        this.qmsNode = qmsNode;
+        this.simulator = simulator;
         this.statsAccumulationTime = statsAccumulationTime;
         this.statsOutputPath = statsOutputPath;
 //        this.accumulatedStats = new ArrayList<>();
@@ -37,7 +37,7 @@ public class StatsAccumulator implements Runnable {
     @Override
     public void run() {
         while (flag) {
-            Stats stats = qmsNode.getCurrentStatsSnapShot();
+            Stats stats = simulator.getCurrentStatsSnapShot();
             Stats currentOutput = stats.getDeltaStats(previousStats);
             previousStats = stats;
 //            this.lastStatUpdateTime = stats.getEndTime();
