@@ -26,7 +26,7 @@ public class StatsAccumulator implements Runnable {
 
     private void init() {
         try {
-            fileWriter = new FileWriter(this.statsOutputPath);
+            fileWriter = new FileWriter(this.statsOutputPath, true);
             fileWriter.write(Stats.getCsvHeaders());
         } catch (IOException e) {
             e.printStackTrace();
