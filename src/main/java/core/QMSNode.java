@@ -5,4 +5,6 @@ public interface QMSNode extends Runnable {
     int getId();
 
     void stop();
+
+    Stats getCurrentStatsSnapShot();
 }

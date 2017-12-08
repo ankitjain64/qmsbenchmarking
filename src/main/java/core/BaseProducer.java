@@ -38,7 +38,7 @@ public abstract class BaseProducer implements Producer {
 
     private boolean produce;
 
-    public BaseProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
+    public BaseProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         this.id = id;
         this.propFileReader = propFileReader;
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
@@ -47,12 +47,17 @@ public abstract class BaseProducer implements Producer {
             throw new IllegalArgumentException("Expected Rate Limit >=0");
         }
         startTime = Utils.getCurrentTime();
-        this.stats = stats;
+        this.stats = new Stats(startTime);
         totalMessageSentCount = 0L;
         this.totalMessagesToSend = (propFileReader.getLongValue(prefix + TOTAL_MESSAGE_TO_SEND, 100000L));
         this.atomicLong = atomicLong;
         this.flag = true;
         this.produce = true;
+    }
+
+    @Override
+    public Stats getCurrentStatsSnapShot() {
+        return this.stats.createSnapShot(Utils.getCurrentTime());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package flume;
 
-import core.Stats;
 import utils.PropFileReader;
 import utils.Utils;
 
@@ -18,8 +17,8 @@ public class FixedLengthRpcFlumeProducer extends BaseRpcFlumeProducer {
         charSize = Utils.getCharByteSize();
     }
 
-    public FixedLengthRpcFlumeProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, stats,propFileReader, atomicLong);
+    public FixedLengthRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id,propFileReader, atomicLong);
         String nodeIdPrefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         int messageSize = propFileReader.getIntegerValue(nodeIdPrefix + MESSAGE_SIZE);
         this.message = Utils.generateMessageText(messageSize, charSize);

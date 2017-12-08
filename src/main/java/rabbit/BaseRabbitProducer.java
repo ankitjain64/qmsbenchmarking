@@ -4,7 +4,6 @@ import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.*;
 import core.BaseProducer;
 import core.Message;
-import core.Stats;
 import utils.PropFileReader;
 
 import java.io.IOException;
@@ -29,8 +28,8 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private Long lastAckDeliveryTag = null;
     private final boolean isPersistent;
 
-    BaseRabbitProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
-        super(id, stats, propFileReader, atomicLong);
+    BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
+        super(id, propFileReader, atomicLong);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(propFileReader.getStringValue(HOST));
         factory.setUsername(propFileReader.getStringValue(USER_NAME));

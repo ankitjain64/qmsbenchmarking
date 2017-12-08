@@ -2,7 +2,6 @@ package kafka;
 
 import core.BaseProducer;
 import core.Message;
-import core.Stats;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -28,13 +27,13 @@ public abstract class BaseKafkaProducer extends BaseProducer {
     private final int partition;
     private static KafkaProduceCallBack callback;
 
-    BaseKafkaProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, stats, propFileReader, atomicLong);
+    BaseKafkaProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, propFileReader, atomicLong);
         producer = new KafkaProducer<>(extractBaseKafkaProducerProperties(propFileReader));
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
         topic = propFileReader.getStringValue(prefix + PRODUCER_TOPIC);
         partition = propFileReader.getIntegerValue(prefix + PARTIOTION_ID, 1);
-        callback = KafkaProduceCallBack.getInstance(this.stats);
+        callback = new KafkaProduceCallBack(this.stats);
     }
 
     @Override

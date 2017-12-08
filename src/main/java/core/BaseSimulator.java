@@ -20,6 +20,7 @@ public abstract class BaseSimulator implements Simulator {
 
     private AtomicLong atomicLong;
     private Stats stats;
+    final List<QMSNode> qmsNodes = new ArrayList<>();
 
     public BaseSimulator() {
         atomicLong = new AtomicLong(0);
@@ -31,7 +32,6 @@ public abstract class BaseSimulator implements Simulator {
         Integer nodeCount = propFileReader.getIntegerValue(NODE_COUNT);
         final ExecutorService executorService = Executors.newFixedThreadPool(nodeCount + 1);
         stats = new Stats(Utils.getCurrentTime());
-        final List<QMSNode> qmsNodes = new ArrayList<>();
         long statsAccumulationTime = propFileReader.getLongValue(STATS_ACCUMULATION_INTERVAL);
         if (statsAccumulationTime == 0) {
             throw new IllegalArgumentException("Stats accumulation time >0");
@@ -40,7 +40,7 @@ public abstract class BaseSimulator implements Simulator {
         StatsAccumulator statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
         if (PRODUCER_ROLE_TYPE.equals(roleType)) {
             for (int i = 0; i < nodeCount; i++) {
-                qmsNodes.add(createProducerThread(i, stats, propFileReader, atomicLong));
+                qmsNodes.add(createProducerThread(i, propFileReader, atomicLong));
             }
         } else if (CONSUMER_ROLE_TYPE.equals(roleType)) {
             for (int i = 0; i < nodeCount; i++) {
@@ -73,6 +73,11 @@ public abstract class BaseSimulator implements Simulator {
 
     @Override
     public Stats getCurrentStatsSnapShot() {
+        stats.reset();
+        for (QMSNode qmsNode : qmsNodes) {
+            Stats currentStatsSnapShot = qmsNode.getCurrentStatsSnapShot();
+            currentStatsSnapShot.update(stats);
+        }
         return this.stats.createSnapShot(getCurrentTime());
     }
 
@@ -85,12 +90,11 @@ public abstract class BaseSimulator implements Simulator {
      * they should be specified as heartbeat_0=12 and heartbeat_1=12
      *
      * @param id             id of the producer
-     * @param stats
      * @param propFileReader prop file read to read properties while creating
      *                       the instance
      * @param atomicLong     @return Producer instance
      */
-    public abstract Producer createProducerThread(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong);
+    public abstract Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong);
 
     public abstract Consumer createConsumerThread(int id, PropFileReader propFileReader);
 

@@ -1,6 +1,7 @@
 package core;
 
 import utils.PropFileReader;
+import utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +51,11 @@ public abstract class BaseConsumer implements Consumer {
             stats.setOutofOrder(isOutOfOrder);
             stats.setGlobalOutOfOrder(isGlobalOutOfOrder);
         }
+    }
+
+    @Override
+    public Stats getCurrentStatsSnapShot() {
+        return this.stats.createSnapShot(Utils.getCurrentTime());
     }
 
     @Override

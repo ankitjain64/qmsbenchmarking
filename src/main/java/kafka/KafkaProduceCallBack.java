@@ -16,7 +16,7 @@ public class KafkaProduceCallBack implements Callback {
 
     private Map<String, Boolean> exceptionVsStackTrace;
 
-    private KafkaProduceCallBack(Stats stats) {
+    public KafkaProduceCallBack(Stats stats) {
         this.stats = stats;
         exceptionVsStackTrace = new HashMap<>();
     }

@@ -2,7 +2,6 @@ package flume;
 
 import core.BaseProducer;
 import core.Message;
-import core.Stats;
 import org.apache.flume.Event;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.api.*;
@@ -27,8 +26,8 @@ public abstract class BaseRpcFlumeProducer extends BaseProducer {
     private List<Event> eventList;
 
 
-    public BaseRpcFlumeProducer(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
-        super(id, stats, propFileReader, atomicLong);
+    public BaseRpcFlumeProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
+        super(id, propFileReader, atomicLong);
         connectProps = new Properties();
         String hostname = propFileReader.getStringValue(FLUME_HOSTS_NAME);//space
         String[] split = hostname.split("\\s+");

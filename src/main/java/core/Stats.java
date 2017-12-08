@@ -214,4 +214,26 @@ public class Stats {
                 ", isGlobalOutOfOrder=" + isGlobalOutOfOrder +
                 '}';
     }
+
+    public void update(Stats stats) {
+        synchronized (this) {
+            stats.ackCount += this.ackCount;
+            stats.rcvCount += this.rcvCount;
+            stats.sendCount += this.sendCount;
+            stats.failedCount += this.failedCount;
+            stats.totalLatency += this.totalLatency;
+            stats.isOutofOrder = stats.isOutofOrder || this.isOutofOrder;
+            stats.isGlobalOutOfOrder = stats.isGlobalOutOfOrder || this.isGlobalOutOfOrder;
+        }
+    }
+
+    public void reset() {
+        this.ackCount = 0L;
+        this.rcvCount = 0L;
+        this.sendCount = 0L;
+        this.failedCount = 0L;
+        this.totalLatency = 0L;
+        this.isOutofOrder = false;
+        this.isGlobalOutOfOrder = false;
+    }
 }

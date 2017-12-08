@@ -3,7 +3,6 @@ package flume;
 import core.BaseSimulator;
 import core.Consumer;
 import core.Producer;
-import core.Stats;
 import utils.PropFileReader;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,13 +21,13 @@ public class FlumeSimulator extends BaseSimulator {
     }
 
     @Override
-    public Producer createProducerThread(int id, Stats stats, PropFileReader propFileReader, AtomicLong atomicLong) {
+    public Producer createProducerThread(int id, PropFileReader propFileReader, AtomicLong atomicLong) {
         Boolean isHomoGenous = propFileReader.getBooleanValue(IS_HOMOGENOUS_MESSAGE_SYSTEM);
         if (isHomoGenous) {
-            return new FixedLengthRpcFlumeProducer(id, stats, propFileReader,
+            return new FixedLengthRpcFlumeProducer(id, propFileReader,
                     atomicLong);
         }
-        return new HeterogenousRpcFlumeProducer(id, stats, propFileReader,
+        return new HeterogenousRpcFlumeProducer(id, propFileReader,
                 atomicLong);
     }
 
