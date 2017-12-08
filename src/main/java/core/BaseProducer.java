@@ -42,7 +42,7 @@ public abstract class BaseProducer implements Producer {
         this.id = id;
         this.propFileReader = propFileReader;
         String prefix = Utils.getNodeIdPrefix(PRODUCER_ROLE_TYPE, this.id);
-        rateLimit = propFileReader.getLongValue(prefix + SEND_RATE_LIMIT);
+        rateLimit = propFileReader.getLongValue(SEND_RATE_LIMIT);
         if (Long.compare(rateLimit, 0) < 0) {
             throw new IllegalArgumentException("Expected Rate Limit >=0");
         }
