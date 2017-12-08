@@ -76,7 +76,7 @@ public abstract class BaseProducer implements Producer {
                 }
             }
             if (this.produce) {
-                long messageNumber = atomicLong.getAndIncrement();
+                long messageNumber = 0L;
                 Message message = new Message(this.id, Utils.getCurrentTime(), messageNumber);
                 doProduce(message);
                 totalMessageSentCount++;

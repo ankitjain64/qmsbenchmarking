@@ -19,7 +19,6 @@ import static utils.Utils.getCurrentTime;
 public abstract class BaseSimulator implements Simulator {
 
     private AtomicLong atomicLong;
-    private Thread statsAccumulatorThread;
     private Stats stats;
 
     public BaseSimulator() {
@@ -39,7 +38,6 @@ public abstract class BaseSimulator implements Simulator {
         }
         String statsOutputPath = propFileReader.getStringValue(STATS_OUTPUT_PATH);
         StatsAccumulator statsAccumulator = new StatsAccumulator(this, statsAccumulationTime, statsOutputPath);
-        statsAccumulatorThread = new Thread(statsAccumulator);
         if (PRODUCER_ROLE_TYPE.equals(roleType)) {
             for (int i = 0; i < nodeCount; i++) {
                 qmsNodes.add(createProducerThread(i, stats, propFileReader, atomicLong));
@@ -54,9 +52,9 @@ public abstract class BaseSimulator implements Simulator {
         for (QMSNode qmsNode : qmsNodes) {
             executorService.submit(qmsNode);
         }
-        System.out.println("Available Processors: ");
-        System.out.println(Runtime.getRuntime().availableProcessors());
-        executorService.submit(statsAccumulatorThread);
+//        System.out.println("Available Processors: ");
+//        System.out.println(Runtime.getRuntime().availableProcessors());
+        executorService.submit(statsAccumulator);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
