@@ -101,6 +101,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             } else {
                 basicProperties = MessageProperties.BASIC;
             }
+            //
             channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
