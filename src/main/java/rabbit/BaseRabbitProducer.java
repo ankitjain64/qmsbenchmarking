@@ -42,6 +42,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             channel.confirmSelect();
         }
         isPersistent = propFileReader.getBooleanValue("persistent", false);
+        System.out.println(isPersistent);
 
         exchangeName = propFileReader.getStringValue(prefix + EXCHANGE_NAME);
         exchangeType = propFileReader.getStringValue(prefix + EXCHANGE_TYPE);
@@ -96,7 +97,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
         try {
             BasicProperties basicProperties;
             if (isPersistent) {
-                basicProperties = MessageProperties.PERSISTENT_TEXT_PLAIN;
+                basicProperties = MessageProperties.PERSISTENT_BASIC;
             } else {
                 basicProperties = MessageProperties.BASIC;
             }
