@@ -1,8 +1,6 @@
 package utils;
 
 import com.google.gson.Gson;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.impl.StandardMetricsCollector;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -126,8 +124,4 @@ public class Utils {
         return sw.toString();
     }
 
-    public static void main(String[] args) {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setMetricsCollector(new StandardMetricsCollector());
-    }
 }
