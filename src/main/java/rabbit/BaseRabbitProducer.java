@@ -5,6 +5,7 @@ import com.rabbitmq.client.*;
 import core.BaseProducer;
 import core.Message;
 import utils.PropFileReader;
+import utils.Utils;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -108,14 +109,11 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             } else {
                 basicProperties = MessageProperties.BASIC;
             }
-            try {
-                while (flowActive) {
-                    Thread.sleep(10L);
-                }
-                channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (flowActive) {
+//                    Thread.sleep(10L);
             }
+            message.setpTs(Utils.getCurrentTime());
+            channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
