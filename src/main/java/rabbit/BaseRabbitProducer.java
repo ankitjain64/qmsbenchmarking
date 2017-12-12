@@ -27,6 +27,7 @@ public abstract class BaseRabbitProducer extends BaseProducer {
     private final String routingKey;
     private Long lastAckDeliveryTag = null;
     private final boolean isPersistent;
+    private boolean flowActive = false;
 
     BaseRabbitProducer(int id, PropFileReader propFileReader, AtomicLong atomicLong) throws IOException, TimeoutException {
         super(id, propFileReader, atomicLong);
@@ -74,6 +75,12 @@ public abstract class BaseRabbitProducer extends BaseProducer {
                 stats.incrementFailCount();
             }
         });
+        channel.addFlowListener(new FlowListener() {
+            @Override
+            public void handleFlow(boolean active) throws IOException {
+                flowActive = true;
+            }
+        });
     }
 
     @Override
@@ -101,8 +108,14 @@ public abstract class BaseRabbitProducer extends BaseProducer {
             } else {
                 basicProperties = MessageProperties.BASIC;
             }
-            //
-            channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
+            try {
+                while (flowActive) {
+                    Thread.sleep(10L);
+                }
+                channel.basicPublish(this.exchangeName, this.routingKey, basicProperties, toJson(message).getBytes(UTF_8));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
