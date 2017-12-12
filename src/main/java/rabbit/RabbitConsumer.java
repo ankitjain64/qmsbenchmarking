@@ -43,6 +43,7 @@ public class RabbitConsumer extends BaseConsumer implements Consumer {
             queueName = channel.queueDeclare().getQueue();
         }
         channel.queueBind(queueName, exchangeName, routngKey);
+        channel.basicQos(propFileReader.getIntegerValue("prefetchCount", 0));
     }
 
     @Override
